@@ -52,13 +52,14 @@ While writing constraint systems is an application, it's not the only one.
 ** A simulation like a virtual chemistry lab, where adding A and B to the beaker makes C
 ** An interactive fiction game, where the character moves from room to room
 ** bottom up recognizers - input characters to words to clauses to sentences to paragraphs.
+** A web application where POST requests modify the store, subject to complex constraints.
 * writing recognizers - 
 ** A computer vision system that recognizes simple objects like a chimney, a door, etc. and combines them to make 'house'.
 ** Expert systems are sometimes mostly recognizers - patient has a cough, fever, trouble swallowing, body aches, they have flu.
 * writing expert systems -
 ** recognizers in expert systems - motor is making noise and input voltage is normal implies bearing failure
 ** resource utilization - I have an extra gate on this IC and need one for this.
-** design constraint systems - 
+** "design constraint" systems - like the checker tool before submitting a PCB design
 * implication 
 ** An AI player for a game with a 'tech tree', where players must build the **tank_factory** to build tanks. Seeing a **tank** means they have the **tank_factory**.
 ** Reasoning about state. A satellite imagery analysis system sees a combine in a field, and reasons the crop is being harvested, so the local grain elevator is full, so a train will come to pick up the grain.
@@ -460,11 +461,27 @@ Guards have one other very useful property - **Reactivation**. We might have a g
 
 ----
 foo(N) <=>  ground(N) | do_something.
-bar(N) <=>  N > 3 | do_something.
+more_than_3(N) <=>  ground(N), N > 3 | fail.
+
+?-more_than_3(X),writeln('middle'),X = 2.
+middle
+false.
 ----
 
 When CHR encounters such a guard, if the guard fails, but might later succeed, as in the first guard,
 or the guard is ambiguous as in the second (if N is unbound), the rule does not fire, but a **unification hook** is attached to the variable. When the variable later grounds, the constraint store looks for rules that can fire.
+
+If one of the rules fails, then the **unification fails in the original Prolog that caused the unification**.
+
+This allows us to build **constraint systems**.  If you're not familiar with constraint systems, check out [my clp(fd) tutorial](http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html).
+Note that the above code says 'middle', and only fails when X is bound.
+
+Since we can later change the constraint we can develop very efficient constraint checkers.
+If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard the weaker constraint.
+
+----
+more_than_4(X) \ more_than_3(X) <=> true.
+----
 
 [Exercise]
 .Exercise - Intervals
@@ -574,11 +591,22 @@ If some prolog fails in rules called by the constraint, the Prolog fails.
 
 If the constraint rules call Prolog and generates choice points, the constraint succeeds with choice points.
 
-If the constraint encounters a guard that might change when 
+If the constraint encounters a guard that might change when a variable is grounded, the constraint is subject to **reactivation**. See the section above on [[Guards]]
 
-<<TODO>>  threads
+Threads
+~~~~~~~
 
-<<TODO>>  server
+A CHR store is **local to one thread**. 
+
+This is particularly painful when implementing a server that uses CHR.
+
+One solution is to do all the CHR work on a special thread. 
+
+Falco Nogatz's [CHR-Constraint-Server](https://github.com/fnogatz/CHR-Constraint-Server) is a useful tool.
+
+The ['3 Little Pigs' game](https://github.com/SWI-PrologTeamLudumDare32/LudumDare45) is a useful starter for a server that uses CHR for it's logic.
+
+A Pengine will have it's own thread. This can be useful for CHR.
 
 Getting
 -------
@@ -653,13 +681,26 @@ L1 to fill in the rest of the list.
 <6> Eventually we run out of `one_foo`'s. We transform the **hole list** to a normal list by 'plugging the hole' with an empty list.
 <7> convenience predicate to run the system.
 
-<<TODO>> helpful utilities
-
 Helpful Utilities
 -----------------
 
-
 ----
+% put this right at beginning for production
+% disable tracing (makes it run faster by  removing debug )
+:- chr_option(debug, off).
+% let it optimize
+:- chr_option(optimize, experimental).
+
+%slow, easy
+ :- chr_option(debug, on).  :- chr_option(optimize, off).
+
+ % avoid the constraint store evaporating at top level.
+ ?- run_my_program, break.
+
+% saner way to do same
+?- set_prolog_flag(toplevel_mode, recursive).
+
+
 % print out the constraint store
 ps :-
     find_chr_constraint(Y),
@@ -674,8 +715,8 @@ ss :- set_prolog_flag(chr_toplevel_show_store, true).
 noss :- set_prolog_flag(chr_toplevel_show_store, false).
 ----
 
-Examples
---------
+Examples and Patterns
+---------------------
 
 There is a dearth of good worked examples and exercises for CHR. Most examples are quite short, and give a poor
 feel for actually programming in CHR.
@@ -685,139 +726,50 @@ Additionally, like any other language, CHR has some standard patterns.
 So I'm going to provide a bunch of simple examples.
 
 
+
+[Exercise]
+.Exercise - radioactive decay
+=====================================================================
+We have some isotope `americium_241` which decays to `neptunium_237` and `helium_4`.
+
+we init some americium into the system, and then time in `tick`s passes. At each `tick`
+randomly 10% of the remaining americium decays.
+
+Simulate this system using CHR.
+
+?- americium_241,americium_241,americium_241,americium_241,americium_241,tick,tick,tick.
+americium_241,
+americium_241,
+americium_241,
+neptunium_237,
+helium_4,
+neptunium_237,
+helium_4.
+
+stretch goal - Pick something whose daughter products are unstable and make
+a similar simulator for it, decaying the daughters along with the parent.
+
+=====================================================================
+
+
 Tech Tree
 ~~~~~~~~~
 
-/* This example solves questions about
- *  "tech trees" using Constraint Handling Rules
- *
- *  Tech Trees are a common game mechanic where the player,
- *  or AI opponent, must build a specific building or unit
- *  before they can build another.
- *  Seeing a unit, the opposing player can then infer that
- *  their opponent possesses all the units needed to
- *  So, for example, if building tanks requires the tank factory,
- *  and the tank factory requires the foundry, then if we see a tank
- *  we can infer they have the foundry.
- *
- *  Our logic doesn't take into account later destruction of units.
- *
- *  Usage is slightly complicated by the fact that returning to the
- *  top level clears the constraint store. Hence provision of the i_saw
- *  convenience predicate.
- *
- *  Usage:
- *  ?- init, i_saw(boat).
- *  ?- init, i_saw([boat, knight]).
- *
- *  stepping in the chr_debugger is useful
- *
- *  ?- chr_trace,init,i_saw(boat).
- *
- *  useful references
- *  https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf
- *  https://dtai.cs.kuleuven.be/CHR/
- *  https://dtai.cs.kuleuven.be/CHR/webchr.shtml
- *  https://www.swi-prolog.org/pldoc/man?section=chr
- *
- *  Copyright (c) 2019   Anne Ogborn
- *  released under the accompanying MIT license
- */
+This example solves questions about
+"tech trees" using Constraint Handling Rules
 
+Tech Trees are a common game mechanic where the player,
+or AI opponent, must build a specific building or unit
+before they can build another.
+Seeing a unit, the opposing player can then infer that
+their opponent possesses all the units needed to
+So, for example, if building tanks requires the tank factory,
+and the tank factory requires the foundry, then if we see a tank
+we can infer they have the foundry.
 
-:- use_module(library(chr)).
+Our logic doesn't take into account later destruction of units.
+Even if we blow up the tank factory, can we be sure they don't have others?
 
-% CHR constraints must be defined using this directive
-:- chr_constraint
-    saw/1, % I saw a unit of this type
-    has/1, % I can infer enemy has a unit of this type
-    can_build/1, % I can infer enemy can build a unit of this type
-    can_build_if/2, % enemy can build a unit of this type if arg2 list all exist
-    needs/2,     % game rule, to build arg1, all of list arg2 must exist
-    reset/0.     % reset the game world
-
-% reset the game elements
-reset \ saw(_) <=> true.
-reset \ has(_) <=> true.
-reset \ can_build(_) <=> true.
-reset \ needs(_, _) <=>true.
-reset \ can_build_if(_, _) <=> true.
-reset <=> true.
-
-%
-% set the initial state of the constraint store,
-% with the game dependencies and two initial peasants
-%
-% to make barracks must have peasant, etc.
-init :-
-    needs(barracks, [peasant]),
-    needs(stable, [peasant, barracks]),
-    needs(dock, [peasant, barracks]),
-    needs(swordsman, [barracks]),
-    needs(knight, [stable]),
-    needs(boat, [dock, peasant]),
-    saw(peasant),  % we 'saw' the peasant
-    saw(peasant).  % because game starts with 2 peasants
-
-
-% enforce set semantics for various things
-% once we know they have a boat, we don't want to add
-% that again
-saw(X), saw(X) <=> saw(X).
-has(X), has(X) <=> has(X).
-can_build(X), can_build(X) <=> can_build(X).
-can_build_if(X, Y), can_build_if(X, Y) <=> can_build_if(X, Y).
-
-% common sense
-saw(X) ==> has(X).         % I saw it, they have it
-has(X) ==> can_build(X).   % they have it, they can make it
-
-% this only exists briefly
-:- chr_constraint must_have/1.
-
-% expresses the idea 'they have tanks, they must have a tank factory'
-% because needs has a list, we recursively fire the must_have rule
-% to add everything
-has(X), needs(X, List) ==> must_have(List).
-must_have([]) <=> true.
-must_have([X|Y]) <=> has(X), must_have(Y).
-
-% add can_build for everything whose needs exist
-% having dock and peasant adds can_build(boat).
-% we wait until the first element of list exists,
-% then go on to second element and wait, and so on
-needs(X, Z) ==> can_build_if(X, Z).
-can_build_if(X, []) <=> can_build(X).
-has(Y), can_build_if(X, [Y | Z]) <=> can_build_if(X, Z), has(Y).
-
-% convenience prolog predicate for testing.
-% pass list of units seen
-i_saw(X) :-
-    atomic(X),
-    call(saw(X)),
-    print_store.
-i_saw(X) :-
-    is_list(X),
-    maplist(callsaw , X),
-    print_store.
-
-callsaw(X) :- call(saw(X)).
-
-%
-% print out results of computation, showing
-% what the enemy has built, and what they can build
-%
-print_store :-
-    writeln('==============='),
-    find_chr_constraint(has(Y)),
-    format('Your enemy has built ~w~n', [Y]),
-    fail.
-print_store :-
-    nl,
-    find_chr_constraint(can_build(Y)),
-    format('Your enemy can build ~w~n', [Y]),
-    fail.
-print_store.
 ----
 
 Pattern - Adjacency
@@ -857,24 +809,22 @@ fix your program so it catches these as well.
 
 
 * cellular automaton from schrijvers slides  slide 82
+* parsing - words
 * recipe reasoner using drinks
 * ref ld45
 * radioactive decay
 % given half lives, put in atoms and watch'em decay
 % keeping track of time
-
-% adventure game.
-
-% 'properly dressed' puzzle
-
+adventure game.
+'properly dressed' puzzle
 Schrijvers 83 - example of 'generate and filter' pattern (56 for generate pattern)
-
 constraint system example.
 
 Useful patterns
 * get_foo
 * constraint system
 * adjacency
+* generate and filter
 * collection
 * backtracking for labeling
 
@@ -918,6 +868,14 @@ fc(my_con(B, 3, C)).
 don't chr for no reason.
 
 summative assessment (add more assement in middle)
+
+
+ *  useful references
+ *  https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf
+ *  https://dtai.cs.kuleuven.be/CHR/
+ *  https://dtai.cs.kuleuven.be/CHR/webchr.shtml
+ *  https://www.swi-prolog.org/pldoc/man?section=chr
+ *
 
 ========== end of outline area ===========
 
@@ -1110,17 +1068,22 @@ Do something that makes it clearer when CHR is appropriate
 *************
 
 
+
+
 Conclusion
 -----------
 
-<<TODO>>Old clpfd version, fix it
+CHR is a powerful addition to the logic programmer's toolkit. I hope you'll find it useful.
 
-Remember, constraint programming is something you should consider any time you have several variables and need to solve for a compatible solution among all of them.
-
-SWI-Prolog ships with a number of constraint libraries. If you're truly inspired, make a tutorial similar to this one for clp(b) or clp(qr) or CHR. If you're inspired to do this, drop me a line, as we're trying to get a nice library of these tutorials together, with a common format so we can automate parts of the process downstream.
-
-I hope you've enjoyed this tutorial. If you notice any mistakes, or want to suggest improvements, or just are totally stumped, email annie66us (at) yahoo_(dotcom) and let me know.
+I hope you've enjoyed this tutorial. If you notice any mistakes, or want to suggest improvements, or just are totally stumped, email annie (at) swi-prolog (dot) org and let me know.
 
 You can often find me as Anniepoo on ##prolog channel on freenode.net IRC.
 
-Thanks to Markus Triska for the clp(fd) library. Hoot Markus!  Thanks to Alan Baljeu for helping with some confusing points. Thanks to Michael Richter for some of the software pipeline setup that produces these tutorials.
+Thanks to Thom Fruewirth for the CHR library and for answering questions on the CHR list and email. 
+Thanks to Alan Baljeu for much patient coaching on the CHR list and for spending a while on video call explaining CHR.
+Thanks to Falco Nogatz for yet more explanations, and for the CHR single threaded server.
+Thanks to Tom Schrijvers, whose slides from ICLP are a great resource. I've also stolen a few examples in this tutorial from his work. Thanks to Michael Richter, who puzzled out bits of this with me and in particular how the right hand side works. Thanks to Gergö Barany for a pleasant afternoon in Vienna spent puzzling out bits of CHR.
+
+
+
+

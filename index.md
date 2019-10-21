@@ -13,7 +13,7 @@ link:/swipltuts/index.html[Up to All Tutorials]
 About This Tutorial
 -------------------
 
-This tutorial is divided into 6 chapters.
+This tutorial is divided into 5 chapters.
 
 . Intro
 ** Who should do this tutorial?
@@ -24,26 +24,33 @@ This tutorial is divided into 6 chapters.
 ** The constraint store
 ** Arguments
 ** defining CHR constraints
+** CHR basic syntax
+** Making CHR interact with Prolog
+** Threads
+** Getting
+** Helpful Utilities
 . Constraint Systems
 . Examples and Patterns
 ** A set of worked examples 
 ** That can be used as exercises
 ** And demonstrate common patterns
 . Advanced material
-** constraint systems
+** advanced syntax
 ** modes
 ** types
-** advanced syntax
 ** performance
-. Tools
-** Debug and usage tools
-** References
 . Final test
 
 Who Should Do This Tutorial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This tutorial is for reasonably experienced SWI-Prolog programmers who want to use Tom Freuwerth's _Constraint_Handling_Rules_ system with **SWI-Prolog**.
+This tutorial is for reasonably experienced SWI-Prolog programmers who want to use Tom Freuwerth's _Constraint_Handling_Rules_ system with **SWI-Prolog**. 
+
+If you are not familiar with clp(fd), you may not understand a few bits of material.
+These are marked. 
+
+If you want to understand making constraint systems, at least read the intro chapter of my [clp(fd) tutorial](/swipltuts/clpfd/clpfd.html), the Prolog clpfd library notes,
+and the entries for attributed variables in the SWI-Prolog manual.
 
 The emphasis of this tutorial is *not* on the theory. The author
 is not a mathematician, just a long suffering Prolog programmer who
@@ -191,18 +198,13 @@ Thanks to Falco Nogatz for yet more explanations, and for the CHR single threade
 Thanks to Tom Schrijvers, whose slides from ICLP are a great resource. I've also stolen a few examples in this tutorial from his work. Thanks to Michael Richter, who puzzled out bits of this with me and in particular how the right hand side works. Thanks to Gergö Barany for a pleasant afternoon in Vienna spent puzzling out bits of CHR.
 
 
-
+<<TODO>> all below here.
 
 ########################################################################################
 summative assessment (add more assement in middle)
 
 
- *  useful references
- *  https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf
- *  https://dtai.cs.kuleuven.be/CHR/
- *  https://dtai.cs.kuleuven.be/CHR/webchr.shtml
- *  https://www.swi-prolog.org/pldoc/man?section=chr
- *
+
 
 ========== end of outline area ===========
 
@@ -233,155 +235,4 @@ types
 tools - all the recursive top level, ss, noss etc tools
 
 ============ end of topics, this is the old stuff (useful) ==========
-
-TODO
-
-
-when prolog encounters a chr constraint as a goal it acts like it's encountered a clp(x)
-type constraint - if the constraint is decidable, it succeeds or fails. If it is not
-it adds the constraint to the constraint store.
-
-When a variable involved in a constraint is grounded (TODO what about clp(fd), how's it interact
-with those constraints?) it checks the guard, if there is one. If so, it executes the body.
-if tthe body fails, then whatever grounded the variable fails.
-
-If the body contains chr constraints, they will be treated as in any other prolog code,
-so
-
-red, blue <=> yellow.  
-
-when red and blue are in the store, they are
-
-
- discard_a, discard_b <=> c   simplification, remove a and b and add c (or whatever the body action is)
- keep_a, keep_b ==> c    propagation  - keep a and b and  add c (or whatever the body action is)
-discard_a \ keep_b <=> c   simpagation - discard a  , keep b, add c (or whatever the body action is)
-
-committed choice -
-CHR looks down from top to find a rule that fires. Then it fires. So subsequent rules are
-ignored
-
-http://voidexception.weebly.com/committed-choice-execution.html
-
-The | is allowed in the body as disjunction to prevent this.
-
-
-
-library(chr) is a library included in the standard SWI-Prolog distribution. It makes it easier
-to set up constraint systems.
-
-Prolog is typeless. This makes rapidly discovering type errors at runtime critical. Constraint systems
-allow this. Additionally, constraint systems are often far faster than hand rolled algorithms.
-
-========
-demonstrates that if you backtrack it undoes the changes to the constraint store.
-:- use_module(library(chr)).
-
-:- chr_constraint foo/0,taco/0.
-
-init :-
-    between(1, 10, _),
-    foo,
-    fail.
-init :- taco.
-
-
-foo ==> taco.
-
-========
-
-TODO other uses of chr
-
-Boney on chr
-
-
-[Wednesday 17 April 2019] [11:21:11 PM PDT] <anniepoo> oh, nice demo - make some symbolic ai-ish thing that uses type constraints- like, X is a thing Bob wore, and X is a thing Bob purchased, so 'pants' is OK, but 'a book' is not
-[Wednesday 17 April 2019] [11:24:29 PM PDT] <Boney> Yeah.
-[Wednesday 17 April 2019] [11:25:26 PM PDT] <anniepoo> the examples that exist are all so simple it's hard to get a sense how to
-[Wednesday 17 April 2019] [11:25:27 PM PDT] <Boney> You wear X over Y, and Y = underpants. And such details.
-[Wednesday 17 April 2019] [11:25:31 PM PDT] <anniepoo> really use it.
-[Wednesday 17 April 2019] [11:25:40 PM PDT] <anniepoo> oh, yes! that's a good idea
-[Wednesday 17 April 2019] [11:26:00 PM PDT] <anniepoo> that was actually the very first program I tried to write (beyond family tree and such) in Prolog
-[Wednesday 17 April 2019] [11:26:03 PM PDT] <Boney> I don't know if CHR can actually be used for type systems, I think it can, I think I thought of that and also read it somewhere..
-[Wednesday 17 April 2019] [11:26:18 PM PDT] <Boney> X is held up by Q,
-[Wednesday 17 April 2019] [11:26:24 PM PDT] <Boney> Q goes over your shoulders.
-[Wednesday 17 April 2019] [11:26:49 PM PDT] <Boney> many mroe such details.
-[Wednesday 17 April 2019] [11:27:34 PM PDT] <anniepoo> as a type system, this would be a dynamic type system.
-[Wednesday 17 April 2019] [11:29:53 PM PDT] <anniepoo> but yes, a type system could be something like
-[Wednesday 17 April 2019] [11:30:06 PM PDT] <anniepoo> X is a thing Bob might wear.
-[Wednesday 17 April 2019] [11:30:18 PM PDT] <anniepoo> then much later on we figure out what X is.
-[Wednesday 17 April 2019] [11:30:51 PM PDT] <anniepoo> could be an interactive story the user tells the machine, in a limited domain, and the machine looks for contradictions
-[Wednesday 17 April 2019] [11:31:21 PM PDT] <anniepoo> X is a thing bob wore.
-[Wednesday 17 April 2019] [11:31:41 PM PDT] <anniepoo> bob wore X under his pants
-[Wednesday 17 April 2019] [11:32:38 PM PDT] <anniepoo> and we deduce X is underwear or socks or a tucked in shirt
-
-alanbaljeau on ##prolog on chr
-he end of every predicate
-[Saturday 20 April 2019] [4:27:32 PM PDT] <alanbaljeu> my other trick is I use CHR a lot, so if i need something available I just make the object and downstream query if it's around.
-[Saturday 20 April 2019] [4:27:51 PM PDT] <anniepoo> hey alan, I'm gearing up to write a tutorial on CHR
-[Saturday 20 April 2019] [4:27:52 PM PDT] <alanbaljeu> not something i'd recommend if it wasn't already part of your toolbox
-[Saturday 20 April 2019] [4:28:10 PM PDT] <anniepoo> but like many of my tutorials, it's motivated by me wanting to learn.
-[Saturday 20 April 2019] [4:28:19 PM PDT] <anniepoo> So waht's some cool, small uses of CHR?
-[Saturday 20 April 2019] [4:28:36 PM PDT] <nicoabie> what is CHR?
-[Saturday 20 April 2019] [4:28:47 PM PDT] <alanbaljeu> Constraint Handling Rules.
-[Saturday 20 April 2019] [4:29:07 PM PDT] <alanbaljeu> for example you can very easily write your own CLP variant.
-[Saturday 20 April 2019] [4:29:13 PM PDT] <nicoabie> nice name
-[Saturday 20 April 2019] [4:29:24 PM PDT] <anniepoo> Constraint Handling Rules - a forward chaining system within swipl . the interface with prolog is constraints, so yah, you can make your own constraint system pretty easy
-[Saturday 20 April 2019] [4:29:55 PM PDT] <nicoabie> clp constraint logic programming?
-[Saturday 20 April 2019] [4:30:05 PM PDT] <alanbaljeu> yes
-[Saturday 20 April 2019] [4:30:07 PM PDT] <anniepoo> that's a set of constraint systems
-[Saturday 20 April 2019] [4:30:15 PM PDT] <nicoabie> I didn't get there yet
-[Saturday 20 April 2019] [4:30:18 PM PDT] <anniepoo> sorry, clp(fd), etc.
-[Saturday 20 April 2019] [4:30:33 PM PDT] <nicoabie> but I think I have used it before, something like glpk?
-[Saturday 20 April 2019] [4:30:39 PM PDT] <anniepoo> yeah, nicolas, suggest you leave it for a while
-[Saturday 20 April 2019] [4:30:56 PM PDT] <anniepoo> nicolas - there are other states of knowledge ghan knowing or not knowing
-[Saturday 20 April 2019] [4:31:09 PM PDT] <anniepoo> knowing = grounded, not knowing = var
-[Saturday 20 April 2019] [4:31:23 PM PDT] <anniepoo> that's classic prolog
-[Saturday 20 April 2019] [4:31:29 PM PDT] <anniepoo> now, think about my mother's height
-[Saturday 20 April 2019] [4:31:46 PM PDT] <nicoabie> var?
-[Saturday 20 April 2019] [4:31:52 PM PDT] <anniepoo> you don't know my mom, but you still can say something about her height
-[Saturday 20 April 2019] [4:32:03 PM PDT] <anniepoo> unbound variable - not grounded
-[Saturday 20 April 2019] [4:32:33 PM PDT] <anniepoo> bound/unbound - the two states of X in prolog
-[Saturday 20 April 2019] [4:32:44 PM PDT] <anniepoo> with me?
-[Saturday 20 April 2019] [4:32:47 PM PDT] <tjis> I don't trust microsoft's motives
-[Saturday 20 April 2019] [4:32:52 PM PDT] <nicoabie> yes
-[Saturday 20 April 2019] [4:33:14 PM PDT] <anniepoo> ok, so, you know my mom's height is a number, with a set of units
-[Saturday 20 April 2019] [4:33:16 PM PDT] <oni-on-ion> MS isnt exactly a sentient being like a kind of monster
-[Saturday 20 April 2019] [4:33:24 PM PDT] <nicoabie> yes
-[Saturday 20 April 2019] [4:33:35 PM PDT] <oni-on-ion> not sure how easy it is for many of us to anthropomorphise or generally personify a "company"
-[Saturday 20 April 2019] [4:33:35 PM PDT] <anniepoo> so 180cm is reasonable - 14 kg is not. Neither is a list
-[Saturday 20 April 2019] [4:33:47 PM PDT] <nicoabie> true that
-[Saturday 20 April 2019] [4:33:53 PM PDT] <alanbaljeu> i started using CHR to make a solver for some complex problems. then i started using it as an active state for all kinds of objects. i'm not sure it was a good choice, but it was convenient to do that instead of passing around huge structures of things.
-[Saturday 20 April 2019] [4:34:10 PM PDT] <oni-on-ion> one person is an individual. indivisable. a company has many divisions. dot com
-[Saturday 20 April 2019] [4:34:14 PM PDT] <anniepoo> you know it's not a negative number, and that my mom's probably not taller than 8 ft or shorter than 3 ft
-[Saturday 20 April 2019] [4:34:54 PM PDT] <anniepoo> hmm... what do you mean by 'active state'?
-[Saturday 20 April 2019] [4:35:12 PM PDT] <nicoabie> yes, those are the constraints it has to be a pos number between two values
-[Saturday 20 April 2019] [4:35:24 PM PDT] <anniepoo> right - so we actually know something about my mom's height
-[Saturday 20 April 2019] [4:35:41 PM PDT] <anniepoo> now, I tell you my dad was 5 ft 8, and my mom's shorter than my dad
-[Saturday 20 April 2019] [4:35:48 PM PDT] <anniepoo> you can reduce the domain
-[Saturday 20 April 2019] [4:36:04 PM PDT] <nicoabie> yeah, it is like glpk
-[Saturday 20 April 2019] [4:36:12 PM PDT] <alanbaljeu> :- chr_constraint x/3. ?- x(a, 3, []). <-- this creates an object x in memory that CHR will process.
-[Saturday 20 April 2019] [4:36:18 PM PDT] <alanbaljeu> that's the active statet.
-[Saturday 20 April 2019] [4:36:33 PM PDT] <anniepoo> ok
-[Saturday 20 April 2019] [4:36:47 PM PDT] <anniepoo> oih, yes! ok, CHR is non monotonic
-[Saturday 20 April 2019] [4:36:50 PM PDT] <tjis> I don't trust companies with a history of meddling
-[Saturday 20 April 2019] [4:36:52 PM PDT] <anniepoo> boing
-[Saturday 20 April 2019] [4:37:31 PM PDT] <anniepoo> yeah, nico, so, you can do lots of cool stuff making your code faster, more robust, etc.
-[Saturday 20 April 2019] [4:38:22 PM PDT] <oni-on-ion> tjis, strangely i would trust something *more* if its had a rough past. being perfectly good is not possible -- so i am releived when something has already got its "bad stuff" out of the way. i'd hire xcons
-[Saturday 20 April 2019] [4:38:24 PM PDT] <nicoabie> I believe I read something in The power of prolog, but I couldn't process it
-[Saturday 20 April 2019] [4:39:01 PM PDT] <anniepoo> yeah, you can extend what's known in all sorts of cool ways
-[Saturday 20 April 2019] [4:40:03 PM PDT] <anniepoo> you could pput certainties on things, and fail when the certainty falls below a certain value
-[Saturday 20 April 2019] [4:40:23 PM PDT] <anniepoo> (hey, dmiles, that's a cool way to improvve reasoning for AGI)
-[Saturday 20 April 2019] [4:40:36 PM PDT] <nicoabie> well now I'm very interested in computational semantics, maybe I can put certainties on interpretation of sentences
-[Saturday 20 April 2019] [4:40:38 PM PDT] <alanbaljeu> So for example I wrote code that can process [ 2 * X +Y > 3, X > 0, Y < -2, member(X, [5,7,10])] and give a value for X and Y.
-
-.Some TODO Exercise
-************
-
-Do something that makes it clearer when CHR is appropriate
-
-*************
-
-
-
-
+s

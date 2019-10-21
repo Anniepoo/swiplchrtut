@@ -510,9 +510,31 @@ In a real example, there would be rules to union the polygon with others.
 Search
 ------
 
-TODO DONE TO HERE
+Flexibly turning normalized data that has to be accessed via joins into single lookup data.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-** Flexibly turning normalized data that has to be accessed via joins into single lookup data.
+Suppose we have some constraints that resemble normalized database tables. 
+
+----
+employee(12345, 'Sally Smith', 1234567890).
+position(12345, manager, outside_sales).
+salary(12345, 69400, 0.1).
+----
+
+While this usually is the best way to represent the data, we sometimes want to examine data in
+denormalized form.
+
+----
+employee(Num, Name, SSN), position(Num, Position, Dept) ==> emp(Num, Name, SSN, Position, Dept).
+----
+
+Now searches of the database don't require rules with multiple heads.
+
+Of course this is a memory/speed tradeoff.
+
+
+
+
 * Dynamic type systems. 
 ** True type systems
 ** constraints as a substitute for 'real' type systems.
@@ -636,6 +658,7 @@ Useful patterns
 * generate and filter
 * collection
 * backtracking for labeling
+* using order for recognition priority
 
 More examples
 

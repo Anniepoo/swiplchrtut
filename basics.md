@@ -10,9 +10,30 @@ Anne Ogborn <annie66us@yahoo.com>
 
 link:/swipltuts/index.html[Up to All Tutorials]
 
-
 Basics
 ------
+
+Here's our _salt water_ example again:
+
+----
+:- use_module(library(chr)).                         <1>
+
+:- chr_constraint salt/0, water/0, salt_water/0.     <2>
+
+salt,water <=> salt_water.                           <3>
+
+?- salt, water.                                      <4>
+salt_water.                                          <5>
+
+?- 
+----
+
+<1> use_module CHR
+<2> define three _chr_constraints_, objects to put in the constraint store.
+<3> define a CHR rule  - if salt and water are in the store, remove them and put in salt_water.
+<4> query that adds salt and water to the store.
+<5> CHR prints the contents of the store at the top level by default. The store contains salt_water.
+
 
 The Constraint Store
 --------------------
@@ -20,6 +41,8 @@ The Constraint Store
 As we have seen, the constraint store holds state. We can put things, called _constraints_, in, and take them out. 
 
 The constraint store can hold multiple copies of a constraint. It works like a multiset or bag.
+
+So, if you make salt water twice, you have two salt_waters. 
 
 [NOTE]
 .Exercise - Multiset Semantics
@@ -29,24 +52,27 @@ Use the above program.
 What do you think will happen if you query this? Try it
 
 Query 
+
+----
 ?- salt, water, salt.
+----
 
 How about this?
 
-Query 
+Query
+
+----
 ?- salt, salt, water, water.
+----
 
 =====================================================================
-
-
-So, if you make salt water twice, you have two salt_waters. 
-
 Arguments
 ~~~~~~~~~
 
 CHR constraints can have arguments of any Prolog type. 
 Suppose we have a large number of beakers, and want to make
-salt water in them.
+salt water in them. We can add an argument to record which beaker we
+put the salt or water in.
 
 ----
 :- use_module(library(chr)).
@@ -66,42 +92,36 @@ salt_water.                                          <4>
 <3> query that adds salt and water to the store.
 <4> CHR prints the contents of the store at the top level by default. The store contains salt_water.
 
-When we call a CHR constraint from prolog, that argument unifies with the same position in the CHR constraint.
-
-[WARNING]
-.Don't Bind Variables!
-=====================================================================
-`foo(1)` is a **different constraint** than `foo(_G123)`.
-
-It **does not work** to ground variables on the left side of the operator.
-
-If you need to ground a variable, do it on the right side.
-This is probably cryptic, and definitely a flat assertion.
-We will explore it later in the section on head syntax, and when we cover retreiving
-information from the store.
-=====================================================================
+When we call a CHR constraint from prolog, that argument unifies with the same position in the CHR constraint. However, the matching is not done in Prolog- it's done in CHR. And to CHR `foo(X)`, with X unbound, is a **different constraint** than `foo(2)`.
 
 [NOTE]
 .Exercise - arguments
 =====================================================================
-Use the version of the program with var
+Use the multi-beaker version of the program
 What do you think will happen if you query this? Try it
 
 Query 
+
+----
 ?- salt(1),water(2), water(1).
+----
 
 How about this?
 
-Query 
+Query
+
+----
 ?- salt(1),water(2), water(_).
+----
 
 And this?
 Query
+
+----
 ?- salt(1),water(2), water(X),X=3.
+----
 
 =====================================================================
-
-
 Defining chr_constraints
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -213,8 +233,6 @@ of syntax which will be omitted here and covered later.
 
 We have seen one operator, `<=>`, informally.  There are actually 3 operators. 
 
-<<TODO>> make this pretty
-
 ----
 name @ discarded <=> guard | body.              <1> Simplification
 name @ retained \ discarded <=> guard | body.    <2> Simpagation
@@ -227,7 +245,8 @@ Name
 ~~~~
 
 First comes an **optional** _name_, a unique identifier for the rule. This is used by various CHR tools,
-but has no effect on the _operation_ of CHR. We will not discuss names further.
+but has no effect on the _operation_ of CHR.  _name_ is followed by an `@`  separator if included.
+We will not discuss names further.
 
 Head
 ~~~~
@@ -235,7 +254,7 @@ Head
 Next comes the _head_.  The head is a series of CHR constraints which must **all** be present for the rule to fire.
 In our first salt water example, both salt and water must be present.
 
-As we've already seen, we can store more than one `salt` in the store. We can have more than one `salt` in the head.
+As we've already seen, we can store more than one `salt` in the store. We can have two `salt`s in the head, in which case we two or more salts in the store to fire the rule.
 
 [NOTE]
 .Exercise - set semantics
@@ -249,8 +268,11 @@ Hint: you want two salts to become one salt.
 
 This **set semantics** is a frequently useful pattern.
 
-Arguments in constraints called from Prolog unify in the usual way. Repeated argumnts in the head must match,
-but **we don't bind variables in the head**. We saw an example of using this earlier, in the multiple beaker
+So what does it mean to match?
+
+Generally this is straightforward - it unifies like Prolog. 
+
+We saw an example of using this earlier, in the multiple beaker
 version of salt water.
 
 ----
@@ -259,40 +281,52 @@ salt(N),water(N) <=> salt_water(N).
 
 If there's a `salt(3)` and a `water(4)` then we don't get salt water. The arguments must match.
 
-[WARNING]
-.Unbound Variables **still** don't do what you expect!
-=====================================================================
-`foo(1)` is a **different constraint** than `foo(_G123)`.
+Now we come to a gotcha.
+If you add a constraint from Prolog, be cognizant of **what constraint you are actually adding**.
 
-foo(N), bar(N) ==> format('foo and bar for ~w present~n', [N]).
+Suppose you have a constraint `foo/1`, and want to get the values.
 
-?- foo(3), bar(3).    % this works fine
+----
+% doesn't work
+get_foo_back(X) :-
+    foo(X).
+----
 
-It **does not work** to ground variables on the left side of the operator.
+This doesn't work because it instead **adds foo with an unbound variable to the store!**
 
-?- foo(1), foo(3), bar(X).
-The X is **not** going to be bound to 1 and 3 on backtracking. We're just adding an unbound
-bar to the store.
+So let's try adding a CHR rule
 
-If you need to ground a variable, do it on the right side.
+----
+% still doesn't work
+get_foo_back(X) :-
+    get_foo(X).
 
-foo(N), bar(M) ==> N = M.
+foo(A), get_foo(A) ==> true.
+----
 
-More about this when we cover returning elements from the store.
-=====================================================================
+Assume we have `foo(3)` in the store.
+This still doesn't work because CHR does:
+
+.Prolog adds `get_foo(X)` with X unbound
+.CHR looks for a rule to fire. It finds `foo(3)` in the store and grounds A to 3.
+.CHR then looks for `get_foo(3)` (since we've bound the variable), and, while there's a `get_foo` with an **unbound variable**, there isn't one with a 3. Oops.
+
+Getting information back from the store to Prolog is covered in [[Getting]].
 
 Operator
 ~~~~~~~~
 
-We have seen the first type of rule, **Simplification**, denoted by the operator `<=>`. What is on the left hand side
-is discarded from the store, and then the right hand side(RHS) is done.
+There are 3 operators in CHR.
 
-Our 'single stir' example has a defect.  It removes the stir from the store, and then re-adds it. This is inefficient and cumbersome. Not only does it mean there are more database operations, but every time a constraint is added to the store, possibly more rules fire. If we have a rule that stirring makes noise, we get a new noise each time the stir constraint is added (back) into the store.
+We have seen the first type of rule, **Simplification**, denoted by the operator `<=>`. 
+What is on the left hand side is **discarded** from the store, and then the right hand side(RHS) is done.
 
-The **Simpagation** rule type fixes this. It uses the same operator `<=>` as the **Simplification** operator, but has a
+Our 'single stir' example has a defect.  It removes the stir from the store, and then re-adds it. This is inefficient and cumbersome. Not only does it mean there are more database operations, but every time a constraint is added to the store, possibly more rules fire. If we have a rule that stirring makes `noise`, we get a new `noise` each time the stir constraint is added (back) into the store.
+
+The **Simpagation** rule type eliminates the remove/re-add workaround. It uses the same operator `<=>` as the **Simplification** operator, but has a
 `\` backslash in the head. The constraints to the left of the `\` are left in the store, and those to the right removed.
 
-Let's improve our single stir version
+Let's improve our single stir version.
 
 ----
 :- use_module(library(chr)).
@@ -338,21 +372,19 @@ guard(Intensity) <=> Intensity < 3.0 | true.   > remove at some point, stupid co
 
 ---------------------------------------------
 
-Now, a warning. You may NOT bind variables in the guard. A particularly easy
-way to do this is to 
-
-[WARN]
-.Exercise - Don't Bind Variables in Guard
-=====================================================================
-The behavior of binding variables in the guard is undefined, and the
-CHR compiler will flag it.
-=====================================================================
-
 You can have multiple goals in the guard. They execute left to right in the usual Prolog manner.
 There is no backtracking (you can't bind anything anyway). They can share variables with the head,
 (as long as they don't bind them) and with each other.
 
-Try to minimize use of guards for performance. Every time the rule might fire, the guard must be executed.
+Try to minimize use of guards for **performance**. Every time the rule might fire, the guard must be executed.
+
+[NOTE]
+.Constraints
+=================================================================
+This material requires understanding constraint programming.
+If you don't, you can skip over it and know you just shouldn't 
+bind variables in the guard.
+=================================================================
 
 Guards have one other very useful property - **Reactivation**. We might have a guard whose success can change
 **without adding a constraint to the store**
@@ -398,18 +430,32 @@ If they come in (high, low), swap them around.
 This exercise is a bit more complex than what you've been doing.
 =====================================================================
 
+
+Now, a warning. **You may NOT bind variables in the guard**.
+Why this restriction?  The guard will be called whenever Prolog decides to check if
+the guard might succeed. 
+If the guard binds variables, simply checking a variable can ground it, or another variable.
+ 
+[WARN]
+.Exercise - Don't Bind Variables in Guard
+=====================================================================
+The behavior of binding variables in the guard is undefined, and the
+CHR compiler will flag it.
+=====================================================================
+
+
 Body
 ~~~~
 
 The final part of a CHR rule is the body. This is NOT a prolog rule body. It *is* a comma separated series of **Prolog rules** and **CHR Constraints**. CHR constraints are added to the constraint store as if called from Prolog.
-If a Prolog goal fails **the entire attempt to add the original constraint fails**, and the store is returned to it's original state prior to the attempt.
+If a Prolog goal or chr_constraint fails **the entire attempt to add the original constraint fails**, and the store is returned to it's original state prior to the attempt.
 
 You **ARE** allowed to bind arguments in the body. This becomes important when we look at getting data back from the store.
 
-CHR execution
--------------
+Which rule fires?
+-----------------
 
-When a constraint is added to the store, CHR adds the constraint, then looks downward from the top of the store until it finds a rule that can fire.  It fires the rule. It  then returns to the top and tries to find a rule to fire again.
+When a constraint is added to the store, CHR adds the constraint, then **looks downward from the top of the store until it finds a rule that can fire**.  It fires the rule. It  then returns to the top and tries to find a rule to fire again. There is no backtracking.
 When there are no more rules that can fire, the loop returns to the caller.
 
 If the rule adds new constraints on the RHS, then the entire algorithm applies recursively at that point.
@@ -434,14 +480,16 @@ moo ==> bar.
 ?- moo.
 
 Think about this. If I add moo then I make bar, then look for another
-rule, find the same one, and keep going. No?
+rule, find the same one, and keep going. No? (think about it, then
+keep reading).
 =====================================================================
 
 No. 
 
 rules **do not re-fire** if both of:
 
-The exact same constraints are involved. Thus the salt,salt,water,water example works.
+The exact same constraints (not just type) are involved. 
+Thus the salt,salt,water,water example works.
 And this answers our 'keep going' question.
 
 Prolog in the body didn't leave choice points.
@@ -466,6 +514,12 @@ state. The original Prolog that added the constraint will fail.
 .Exercise - Demonstrate failure
 =====================================================================
 Fiddle about and demonstrate failure.
+what happens if you add a constraint to the store and then fail?
+
+For that matter, what happens if you throw?
+
+Extra credit: what happens if you throw a delimited continuation and
+it resets?
 =====================================================================
 
 [Exercise]
@@ -485,7 +539,25 @@ Making CHR interact with Prolog
 
 As we've seen, calling a CHR constraint from Prolog causes it to be added to the store.
 
-If some prolog fails in rules called by the constraint, the Prolog fails.
+If Prolog in the **body** of any rule fails, all changes to the store since the 'original'
+attempt to add a constraint (by calling it from Prolog) are **rolled back**.
+The Prolog itself then fails t that poing.
+
+----
+
+:- chr_constraint blah/0.
+
+some_prolog :-
+    writeln('got here'),
+    blah,
+    writeln('Prolog will fail before it gets here').
+
+blah ==> fail.
+
+?- some_prolog.
+got here
+false.
+----
 
 If the constraint rules call Prolog and generates choice points, the constraint succeeds with choice points.
 
@@ -522,10 +594,11 @@ Make a get_thing constraint that grabs the thing on the RHS.
 thing(N) \ get_thing(M) <=> N = M.
 ----
 
-Notice that I'm binding N to M **on the right hand side**.  
-This makes the constraints in the head thing with any argument, and get_thing with any argument.
+Notice that I'm binding N to M **on the right hand side**. 
+
+This makes the constraints in the head `thing` with **any argument**, and `get_thing` with **any argument**.
 They need not be the same at this point.
-On the RHS we're going to hope get_thing's argument is unground, and unify it with thing's argument.
+On the RHS we're going to hope `get_thing`'s argument is unground, and unify it with `thing`'s argument.
 
 If there are many things, and we don't mind backtracking to get them, this works as well.
 EG if you just want to print them out, a repeat-fail list works
@@ -574,13 +647,15 @@ go(X) :- load_it, get_foo(X).                                 <7>
 <3> We'll copy all the constraints, then delete the copies as we collect them into the list
 <4> When we start we swap `get_foo` for `collect_foo`, passing along the argument.
 <5> we discard a `one_foo`, and the current `collect_foo`. We bind `collect_foo`'s argument **L**
-to a **hole list**, a list whose final element is the unbound L1. We then add a new `collect_foo` with
-L1 to fill in the rest of the list.
+to a **hole list**, a list whose final element is the unbound L1. We then add a new `collect_foo` with L1 to fill in the rest of the list.
 <6> Eventually we run out of `one_foo`'s. We transform the **hole list** to a normal list by 'plugging the hole' with an empty list.
 <7> convenience predicate to run the system.
 
 Helpful Utilities
 -----------------
+
+There is a debugger for CHR similar to the old four port debugger. `chr_trace/0` and
+`chr_notrace/0` invoke it.
 
 ----
 % put this right at beginning for production
@@ -589,26 +664,64 @@ Helpful Utilities
 % let it optimize
 :- chr_option(optimize, experimental).
 
-%slow, easy
+%slower execution, easier understanding of debugger output
  :- chr_option(debug, on).  :- chr_option(optimize, off).
+----
 
+CHR clears the constraint store when it returns to the top level.
+This can be annoying when learning or debugging if you want to manually
+manipulate the store.
+
+Here are a couple ways to avoid this. The first repeatedly breaks into
+a new level of the interactor. The second is to use a flag that does effectively
+the same thing, but you don't have to remember to do it each time.
+ 
+----
  % avoid the constraint store evaporating at top level.
  ?- run_my_program, break.
 
 % saner way to do same
 ?- set_prolog_flag(toplevel_mode, recursive).
+----
 
+`find_chr_constraint/1` is intended for debugging, and is slow.
+Don't use this as a pattern for reading the constraint store.
+but I often add this to my CHR programs as a handy debug tool.
 
+----
 % print out the constraint store
 ps :-
     find_chr_constraint(Y),
     format('constraint store contains ~w~n', [Y]),
     fail.
 ps.
+----
 
+CHR prints out the contents of the constraint store when you return to the top
+level.  This behavior can be helpful or annoying dependin on the situation.
+
+Here's some debug code to turn it on and off.
+
+----
 % print out constraint store when you return to top level
 ss :- set_prolog_flag(chr_toplevel_show_store, true).
 
 % or don't
 noss :- set_prolog_flag(chr_toplevel_show_store, false).
 ----
+
+Conclusion
+----------
+
+This completes the basics of CHR. You should be ready to study 
+[Constraint Systems](constraintsystems.html).
+
+Useful references
+
+ *  https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf
+ *  https://dtai.cs.kuleuven.be/CHR/
+ *  https://dtai.cs.kuleuven.be/CHR/webchr.shtml
+ *  https://www.swi-prolog.org/pldoc/man?section=chr
+
+
+ * 

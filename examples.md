@@ -12,15 +12,209 @@ link:/swipltuts/index.html[Up to All Tutorials]
 
 This chapter covers no truly new material, but should help you find some useful ways to use CHR.
 
-<<TODO>> make sure get_foo gets covered
 
-Useful patterns
-* get_foo
-* constraint system
-* adjacency
-* generate and filter
-* collection
-* backtracking for labeling
+.Useful patterns
+** get_foo
+** constraint system
+** adjacency
+** set semantics
+** generate and filter
+** actions and state
+** collection/aggregation
+** backtracking for labeling
+. Implementing Things in CHR
+
+
+Useful Patterns
+---------------
+
+get_foo
+~~~~~~~
+
+This pattern is used to get a list of constraints from the store.
+
+It was covered in 'getting', but is largely repeated here.
+
+The trick is to pass in an unbound variable with `get_foo`, and
+then bind the variable in rule bodies.
+
+----
+:- use_module(library(chr)).
+
+:- chr_constraint foo/1,one_foo/1, collect_foo/1, get_foo/1.   <1>
+
+load_it :-                                                     <2>
+    foo(1),
+    foo(3),
+    foo(7).
+
+% copy constraints to be collected
+foo(X), get_foo(_) ==> one_foo(X).                            <3>
+get_foo(L) <=> collect_foo(L).                                <4>
+
+% collect and remove copied constraints
+one_foo(X), collect_foo(L) <=>                                <5>
+          L=[X|L1], collect_foo(L1).
+collect_foo(L) <=> L=[].                                      <6>
+
+go(X) :- load_it, get_foo(X).                                 <7>
+----
+
+<1> There are four moving pieces. 
+* `foo/1`, the constraint. 
+* `one_foo/1`, a temporary copy of the constraint
+* `collect_foo/1`, a place to hold the list built up so far
+* `get_foo/1` the API to the outside Prolog
+<2> Let's load some constraints
+<3> We'll copy all the constraints, then delete the copies as we collect them into the list
+<4> When we start we swap `get_foo` for `collect_foo`, passing along the argument.
+<5> we discard a `one_foo`, and the current `collect_foo`. We bind `collect_foo`'s argument **L**
+to a **hole list**, a list whose final element is the unbound L1. We then add a new `collect_foo` with L1 to fill in the rest of the list.
+<6> Eventually we run out of `one_foo`'s. We transform the **hole list** to a normal list by 'plugging the hole' with an empty list.
+<7> convenience predicate to run the system.
+
+Constraint System
+~~~~~~~~~~~~~~~~~
+
+See the chapter on constraint systems.
+
+Adjacency
+~~~~~~~~~
+
+We may have an ordered list of items, and want to put them in a constraint store while preserving their
+order information. In particular, we might want to preserve adjacency.
+
+Here are a few strategies
+
+Keep an index
+^^^^^^^^^^^^^
+
+Store constraints as `foo(Index, Data)`. Check adjacency as
+
+----
+foo(I, Data1), foo(J, Data2) ==> succ(I, J) | something(Data1, Data2).
+----
+
+Keep Index Pairs
+^^^^^^^^^^^^^^^^
+
+Store constraints as `foo(Index, Next, Data)` where Next is Index + 1.
+
+----
+foo(_, I, Data1), foo(I, _, Data2) ==> something(Data1, Data2).
+----
+
+This takes more memory but runs faster.
+
+This strategy also allows a form of **bottom up parsing** where you replace raw tokens with
+progressively more 'cooked' tokens. Suppose we have some tokens already classified as `word_char(Char)`,
+we can assemble words as:
+
+----
+token(WordIndex, Letter, word(Word)), token(Letter, Next, word_char(B)) <=> 
+       append(Word, [B], NewWord),
+       token(WordIndex, Next, word(NewWord)).
+token(WordIndex, Next, word_char(A))  <=> token(WordIndex, Next, word([A]))
+----
+
+<<TODO>>test that
+
+Set Semantics
+~~~~~~~~~~~~~
+
+Sometimes it's useful to give a CHR constraint set semantics instead of the default multiset semantics.
+
+Model of light in a room
+
+----
+:- chr_constraint turn_on/0, turn_off/0, light_on/0.
+
+turn_on <=> light_on.
+turn_off, light_on <=> true.
+----
+
+The problem is, if the light is already on when turn_on occurs, we get two `light_on` constraints
+in the store. Not what we want - `turn_off` won't work properly.
+
+Add a rule
+
+----
+light_on \ light_on <=> true.
+----
+
+Generate and Filter
+~~~~~~~~~~~~~~~~~~~
+
+It is often easier to generate a set of something and then filter out items not in the set.
+
+Here's a (rather inefficient) prime number generator:
+
+----
+:- chr_constraint init/1,num/1.
+% primes
+
+% generate numbers from 1-n
+init(N) ==> num(1).
+init(N), num(M) ==> N > M | succ(M, NewM), num(NewM).
+num(N) \ init(N) <=> true.
+
+% remove the non-primes.
+num(A) \ num(B) <=> B > A, B mod A =:= 0 | true.
+----
+
+Actions and State
+~~~~~~~~~~~~~~~~~
+
+I find it useful to distinguish _actions_, constraints in the store to set off behavior, from _state_.
+
+In the above prime number example, we know we should make num/1 constaints when init/1 exists.
+
+The general pattern is:
+
+
+. Outside agency (prolog or other CHR) adds the 'ignition' constraint
+. Rules fire until some process completes
+. The 'ignition' constraint is removed.
+
+Collection/Aggregation
+~~~~~~~~~~~~~~~~~~~~~~
+
+You can do aggregation / foldl / collection in the same way get_foo works.
+
+----
+:- use_module(library(chr)).
+
+:- chr_constraint foo/1,one_foo/1, sum_foo/1, do_sum_foo/0.   <1>
+
+load_it :-                                                     <2>
+    foo(1),
+    foo(3),
+    foo(7).
+
+% copy constraints to be collected
+foo(X), do_sum_foo ==> one_foo(X).                            <3>
+do_sum_foo <=> sum_foo(0).                                    <4>
+
+% collect and remove copied constraints
+one_foo(X), sum_foo(N) <=>                                    <5>
+          NN is N + X, 
+          sum_foo(NN).
+
+go(X) :- load_it, do_sum_foo, find_chr_constraint(sum_foo(X)).   <6>
+----
+
+<1> There are four moving pieces. 
+* `foo/1`, the constraint. 
+* `one_foo/1`, a temporary copy of the constraint
+* `sum_foo/1`, a place to hold the list built up so far
+* `do_sum_foo/0` the action constraint that sets it off
+<2> Let's load some constraints
+<3> We'll copy all the constraints, then delete the copies as we sum them
+<4> Next we create `sum_foo`.
+<5> we discard a `one_foo`, and the current `sum_foo`. We add a new `sum_foo` with the new sum. Eventually we run out of `one_foo`'s and sum_foo contains the total.
+<6> convenience predicate to run the system. 
+
+
 
 Implementing Things in CHR
 --------------------------
@@ -65,7 +259,7 @@ Obviously this is beyond the scope of a tutorial, but there are examples in the 
 [Constraint Systems](constraintsystems.html)
 
 Build a type system
-^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~
 
 A (dynamic) type is just a constraint to a specific type.
 
@@ -79,13 +273,11 @@ alternatively
 must_be_int(X, Context) <=> ground(X) | throw(error(type_error(integer, X), Context)).
 ----
 
-Additionally, constraint systems are often far faster than hand rolled algorithms
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+Constraint systems are often far faster than hand rolled algorithms
 See [[When constraint B subsumes constraint A, discard A for better performance]]
 
 Making programs where things transform into things
---------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A GUI where a button changes appearance when clicked
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -116,7 +308,7 @@ appearance(B, click1), tick <=> appearance(B, up).
 A game where a a spaceship changes appearance after it is hit, fires it's rockets, etc.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here's a bit of CHR code that processes hits on spaceships. 
+Here's a bit of CHR code that processes hits on spaceships, and some refactors.
 
 ----
 % ignore hits on dead ships
@@ -234,7 +426,6 @@ DCGs are what immediately comes to mind when we think about parsing in Prolog.
 But the parsers generated can have issues with left recursion, and with performance. Additionally, they
 are most natural for languages like computer languages that are defined recursively.
 
-.Optional Title
 [quote, David Warren, XSB Book]
 ____
 "It is for this reason that some people respond to the claim that _You get a parser for free with Prolog_ with _Maybe, but it's not a parser I want to use_. "
@@ -333,7 +524,7 @@ Suppose we have a web page with various lists of items, say a list of methods of
 I personally think there's a lot of possibility in melding CHR and tau-Prolog to make a fully declarative web application development system.
 
 Writing **Recognizers**
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 A **Recognizer**, for our purposes, is a CHR program that takes some input and 'finds' a pattern within it.
 
@@ -363,15 +554,8 @@ recognizer and a bad door recognizer, and maybe a passable window recognizer and
 And we take the output of those, and combine them in CHR, and use symbolic recognition similar to the drawing game, and if
 the combination of windows, door, chimney, and 'house' doesn't make sense, we can suspect a false positive.
 
-
-Expert systems are sometimes mostly recognizers - patient has a cough, fever, trouble swallowing, body aches, they have flu.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-See next section.
-
 Writing Expert Systems
-----------------------
-
+~~~~~~~~~~~~~~~~~~~~~~
 Most expert systems are just forward chaining inference engines. 
 
 The classic 'room layout' example is an easy exercise in CHR. In this expert system we find solutions
@@ -421,7 +605,7 @@ recognizers in expert systems
 
 Suppose we have a medical expert system. 
 
-[Acute abdomen](https://en.wikipedia.org/wiki/Acute_abdomen) is a serious medical emergency with many possible causes.
+[Acute abdomen](https://en.wikipedia.org/wiki/Acute_abdomen) is a serious medical emergency with many possible causes.r
 Before we can proceed to a diagnosis, we have to recognize that the patient does indeed have _acute abdomen_.
 
 * patient must have severe abdominal pain
@@ -448,7 +632,7 @@ However, when reasoning about the real world, it is convenient to think about a 
 cake_pan, oven \ cake_mix, eggs, water <=> cake.
 ----
 
-When we bake a cake, we destroy the mix of ingredients from which it's made.
+When we bake a cake, we destroy the mix of ingredients from which it's made, but not the cake pan or oven.
 
 CHR is an excellent method of reasoning about such problems.
 
@@ -508,7 +692,7 @@ In a real example, there would be rules to union the polygon with others.
 
 
 Search
-------
+~~~~~~
 
 Flexibly turning normalized data that has to be accessed via joins into single lookup data.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -533,6 +717,7 @@ Now searches of the database don't require rules with multiple heads.
 Of course this is a memory/speed tradeoff.
 
 
+<<TODO>> end this chapter, remove or incorporate material below
 
 
 * Dynamic type systems. 
@@ -542,21 +727,7 @@ Of course this is a memory/speed tradeoff.
 
 <<TODO>> - go back to the 'things you can build' from intro and explain how to build each one
 
-Examples and Patterns
----------------------
 
-There is a dearth of good worked examples and exercises for CHR. Most examples are quite short, and give a poor
-feel for actually programming in CHR.
-
-Additionally, like any other language, CHR has some standard patterns. 
-
-So I'm going to provide a bunch of simple examples.
-
-[Wednesday 17 April 2019] [11:21:11 PM PDT] <anniepoo> oh, nice demo - make some symbolic ai-ish thing that uses type constraints- like, X is a thing Bob wore, and X is a thing Bob purchased, so 'pants' is OK, but 'a book' is not
-[Wednesday 17 April 2019] [11:24:29 PM PDT] <Boney> Yeah.
-[Wednesday 17 April 2019] [11:25:26 PM PDT] <anniepoo> the examples that exist are all so simple it's hard to get a sense how to
-[Wednesday 17 April 2019] [11:25:27 PM PDT] <Boney> You wear X over Y, and Y = underpants. And such details.
-[Wednesday 17 April 2019] [11:25:31 PM PDT] <anniepoo> really use it.
 
 [Exercise]
 .Exercise - radioactive decay

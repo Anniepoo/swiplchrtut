@@ -10,6 +10,18 @@ Anne Ogborn <annie66us@yahoo.com>
 
 link:/swipltuts/index.html[Up to All Tutorials]
 
+Contents
+--------
+
+.The constraint store
+.Arguments
+.Defining CHR constraints
+.Basic CHR syntax
+.Making CHR interact with Prolog
+.Threads
+** Getting
+** Helpful Utilities
+
 Basics
 ------
 
@@ -123,7 +135,7 @@ Query
 
 =====================================================================
 Defining chr_constraints
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 CHR constraints are defined using the `chr_constraint/1` directive, giving the constraint's signature.
 
@@ -378,32 +390,44 @@ There is no backtracking (you can't bind anything anyway). They can share variab
 
 Try to minimize use of guards for **performance**. Every time the rule might fire, the guard must be executed.
 
+Now, a warning. **You may NOT bind variables in the guard**.
+Why this restriction?  The guard will be called whenever Prolog decides to check if
+the guard might succeed. 
+If the guard binds variables, simply checking a variable can ground it, or another variable.
+ 
+[WARN]
+.Don't Bind Variables in Guard
+=====================================================================
+The behavior of binding variables in the guard is undefined, and the
+CHR compiler will flag it.
+=====================================================================
+
+
 [NOTE]
 .Constraints
 =================================================================
 This material requires understanding constraint programming.
 If you don't, you can skip over it and know you just shouldn't 
 bind variables in the guard.
+Alternatively, check out  [my clp(fd) tutorial](http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html).
 =================================================================
 
 Guards have one other very useful property - **Reactivation**. We might have a guard whose success can change
 **without adding a constraint to the store**
 
 ----
-foo(N) <=>  ground(N) | do_something.
-more_than_3(N) <=>  ground(N), N > 3 | fail.
+more_than_3(N) <=>  ground(N) | N > 3.
 
 ?-more_than_3(X),writeln('middle'),X = 2.
 middle
 false.
 ----
 
-When CHR encounters such a guard, if the guard fails, but might later succeed, as in the first guard,
-or the guard is ambiguous as in the second (if N is unbound), the rule does not fire, but a **unification hook** is attached to the variable. When the variable later grounds, the constraint store looks for rules that can fire.
+This guard can change if we add `more_than_3(X)` and then later **ground X**.
 
-If one of the rules fails, then the **unification fails in the original Prolog that caused the unification**.
+When CHR encounters such a guard, the rule does not fire, but a **unification hook** is attached to the variable. When the variable later grounds, the rule fires. This may cause **prolog** to fail at this point.
 
-This allows us to build **constraint systems**.  If you're not familiar with constraint systems, check out [my clp(fd) tutorial](http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html).
+This allows us to build **constraint systems**. 
 Note that the above code says 'middle', and only fails when X is bound.
 
 Since we can later change the constraint we can develop very efficient constraint checkers.
@@ -430,20 +454,6 @@ If they come in (high, low), swap them around.
 This exercise is a bit more complex than what you've been doing.
 =====================================================================
 
-
-Now, a warning. **You may NOT bind variables in the guard**.
-Why this restriction?  The guard will be called whenever Prolog decides to check if
-the guard might succeed. 
-If the guard binds variables, simply checking a variable can ground it, or another variable.
- 
-[WARN]
-.Exercise - Don't Bind Variables in Guard
-=====================================================================
-The behavior of binding variables in the guard is undefined, and the
-CHR compiler will flag it.
-=====================================================================
-
-
 Body
 ~~~~
 
@@ -452,10 +462,10 @@ If a Prolog goal or chr_constraint fails **the entire attempt to add the origina
 
 You **ARE** allowed to bind arguments in the body. This becomes important when we look at getting data back from the store.
 
-Which rule fires?
+Which Rule Fires?
 -----------------
 
-When a constraint is added to the store, CHR adds the constraint, then **looks downward from the top of the store until it finds a rule that can fire**.  It fires the rule. It  then returns to the top and tries to find a rule to fire again. There is no backtracking.
+When a constraint is added to the store, CHR adds the constraint, then **looks downward from the top of the store until it finds a rule that can fire**.  It fires the rule. It then returns to the top and tries to find a rule to fire again. There is no backtracking.
 When there are no more rules that can fire, the loop returns to the caller.
 
 If the rule adds new constraints on the RHS, then the entire algorithm applies recursively at that point.
@@ -469,6 +479,12 @@ foo ==> bar,baz.
 We add foo. We find the above rule and add **bar only**. We added a constraint, so we **look for a rule match**.
 Now we add baz. We added a constraint, so we **look for a rule match**.
 
+When CHR is 'just sitting there' no constraint is active. When we call a chr_constraint from Prolog, it
+is added and made the _active_ constraint. If the rule causes other rules to be added, in turn they will
+be the _active_ constraint. Only rules that contain the active constraint are checked.
+
+This makes the store more _stable_. You needn't worry about some unrelated action firing a rule.
+
 
 [Exercise]
 .Exercise - Does this terminate?
@@ -480,11 +496,11 @@ moo ==> bar.
 ?- moo.
 
 Think about this. If I add moo then I make bar, then look for another
-rule, find the same one, and keep going. No? (think about it, then
+rule, find the same one, and _keep going_? No? (think about it, then
 keep reading).
 =====================================================================
 
-No. 
+It terminates. 
 
 rules **do not re-fire** if both of:
 
@@ -506,9 +522,9 @@ backtrack(X) ==> member(X, [a,b,c]).
 
 What happens if the Prolog **fails**?
 
-**We're not in Prolog** - so there will NOT be backtracking to a previous solution. Instead, the **entire
-attempt** to add the constraint to the store will fail, and the CHR store will roll back to it's previous
-state. The original Prolog that added the constraint will fail.
+If that fails, the **entire attempt** to add the constraint to the store will fail, and the CHR store will roll back to it's previous state. The original Prolog that added the constraint will **fail**.
+
+Notice that what it will NOT do is try other valures or go on to the next rule. Failure stops the entire show.
 
 [Exercise]
 .Exercise - Demonstrate failure
@@ -522,17 +538,42 @@ Extra credit: what happens if you throw a delimited continuation and
 it resets?
 =====================================================================
 
+What happens if the Prolog in the body leaves **choice points** that aren't consumed later in the body?
+Then if the **original calling prolog** 'sees' a choice point.
+
+Recursion is often a useful pattern.
+
 [Exercise]
 .Exercise - 8888
 =====================================================================
 Let's get lucky. Many Chinese folks think numbers like 8888 are auspicious.
 
-make a constraint lucky/1. Only add to the store those that are 'lucky' (a series
+make a constraint `lucky/1`. Only add to the store those that are 'lucky' (a series
 of 8's).
 lucky(888).  % stays in store
+lucky(888888888). % stays in store
 lucky(77). % remove
+lucky(8). % stays in store
+
+hint: you will need **two** constraints, one to stay in the store and one to add
+to the store
 =====================================================================
 
+A bit of larger advice. When recognizing, there is an inherent conflict between adding
+things to the store and replacing them.
+Suppose we have a recognizer for drawings. It's handed this drawing:
+
+image:house.png[childs drawing of house]
+
+We define a house as a triangle atop a box. Well, if we find the 'triangle' part first,
+and turn it into a triangle, we're left with
+
+image:housebody.png[3 lines, 2 vertical and one at bottom]
+
+Which isn't a 'box' any more. In this case it's probably better to leave 'lines' in the store.
+
+On the other hand, if you recognize a squiggle as a 'line' (as opposed to an S shape or a circle), it's
+probably better to remove the squiggle and keep the line.
 
 Making CHR interact with Prolog
 -------------------------------
@@ -583,9 +624,7 @@ Getting
 
 What hasn't been mentioned to now is how to get a value back to prolog.
 
-CHR doesn't backtrack on it's own, we can't bind in the head, so how do we get a value back?
-
-If we only expect one of the constraints in the store, this is relatively straightforward.
+If we only need a generator, to get the solutions on backtracking, this is relatively straightforward.
 Make a get_thing constraint that grabs the thing on the RHS.
 
 ----
@@ -594,9 +633,9 @@ Make a get_thing constraint that grabs the thing on the RHS.
 thing(N) \ get_thing(M) <=> N = M.
 ----
 
-Notice that I'm binding N to M **on the right hand side**. 
+Notice that I'm binding N to M **on the right hand side**.
 
-This makes the constraints in the head `thing` with **any argument**, and `get_thing` with **any argument**.
+This makes the constraints matched in the head `thing` with **any argument**, and `get_thing` with **any argument**.
 They need not be the same at this point.
 On the RHS we're going to hope `get_thing`'s argument is unground, and unify it with `thing`'s argument.
 
@@ -613,6 +652,7 @@ print_things.
 ----
 
 But what if there are many things, and we want to consolidate them in a list?
+Unfortunately `findall/3`, `setof/3`, bagof/3` etc. don't work.
 
 We use a pattern which I've named the _get_foo_ pattern.
 
@@ -716,6 +756,8 @@ Conclusion
 This completes the basics of CHR. You should be ready to study 
 [Constraint Systems](constraintsystems.html).
 
+This is also a great time to work some of the [Examples and Patterns](examples.html)
+
 Useful references
 
  *  https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf
@@ -723,5 +765,3 @@ Useful references
  *  https://dtai.cs.kuleuven.be/CHR/webchr.shtml
  *  https://www.swi-prolog.org/pldoc/man?section=chr
 
-
- * 

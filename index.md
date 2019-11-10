@@ -10,44 +10,45 @@ Anne Ogborn <annie66us@yahoo.com>
 
 link:/swipltuts/index.html[Up to All Tutorials]
 
+
 About This Tutorial
 -------------------
 
 This tutorial is divided into 5 chapters.
 
 . Intro
-** Who should do this tutorial?
-** Why another tutorial?
-** What is CHR good for?
-** Intro to CHR
+.. Who should do this tutorial?
+.. Why another tutorial?
+.. What is CHR good for?
+.. Intro to CHR
 . Basics
-** The constraint store
-** Arguments
-** defining CHR constraints
-** CHR basic syntax
-** Making CHR interact with Prolog
-** Threads
-** Getting
-** Helpful Utilities
+.. The constraint store
+.. Arguments
+.. defining CHR constraints
+.. CHR basic syntax
+.. Making CHR interact with Prolog
+.. Threads
+.. Getting
+.. Helpful Utilities
 . Constraint Systems
 . Examples and Patterns
-** A set of worked examples 
-** That can be used as exercises
-** And demonstrate common patterns
+.. A set of worked examples 
+.. That can be used as exercises
+.. And demonstrate common patterns
 . Advanced material
-** advanced syntax
-** modes
-** types
-** performance
-. Final test
+.. advanced syntax
+.. modes
+.. types
+.. performance
+. Conclusion and Final test
 
 Who Should Do This Tutorial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This tutorial is for reasonably experienced SWI-Prolog programmers who want to use Tom Freuwerth's _Constraint_Handling_Rules_ system with **SWI-Prolog**. 
 
-If you are not familiar with clp(fd), you may not understand a few bits of material.
-These are marked. 
+Some parts of the material, notably the chapter on constraint systems, depend on a knowledge of constraint
+programming. 
 
 If you want to understand making constraint systems, at least read the intro chapter of my [clp(fd) tutorial](/swipltuts/clpfd/clpfd.html), the Prolog clpfd library notes,
 and the entries for attributed variables in the SWI-Prolog manual.
@@ -180,59 +181,12 @@ salt_water.                                          <5>
 =====================================================================
 Run the above salt water example.
 
-Make iced tea. Iced tea is made of water, sugar, and tea_bag.
+Make tea. Tea is made of water, sugar, and tea_bag.
 =====================================================================
 
+
 Conclusion
------------
+----------
 
-CHR is a powerful addition to the logic programmer's toolkit. I hope you'll find it useful.
+With some preliminaries out of the way, we're ready to dive into [The Basics of CHR](basics.html)
 
-I hope you've enjoyed this tutorial. If you notice any mistakes, or want to suggest improvements, or just are totally stumped, email annie (at) swi-prolog (dot) org and let me know.
-
-You can often find me as Anniepoo on ##prolog channel on freenode.net IRC.
-
-Thanks to Thom Fruewirth for the CHR library and for answering questions on the CHR list and email. 
-Thanks to Alan Baljeu for much patient coaching on the CHR list and for spending a while on video call explaining CHR.
-Thanks to Falco Nogatz for yet more explanations, and for the CHR single threaded server.
-Thanks to Tom Schrijvers, whose slides from ICLP are a great resource. I've also stolen a few examples in this tutorial from his work. Thanks to Michael Richter, who puzzled out bits of this with me and in particular how the right hand side works. Thanks to Gergö Barany for a pleasant afternoon in Vienna spent puzzling out bits of CHR.
-
-
-<<TODO>> all below here.
-
-########################################################################################
-summative assessment (add more assement in middle)
-
-
-
-
-========== end of outline area ===========
-
-topics
-resolution algorithm
-the RHS
-Should I add or replace?
-CHR or DCG?
-Conflict between recognition of different objects.
-CHR isnt prolog, it's committed, it doesn't backtrack and you can't bind in head.
-failure
-pragmas
-name
-performance
-patterns
-get_foo pattern
-aggregation pattern
-negation
-backtracking over a constraint removes from store
-don't bind in head
-don't bind in guard
-
-single threaded
-mention falco's server and the LD45 server
-making constraint systems
-modes
-types
-tools - all the recursive top level, ss, noss etc tools
-
-============ end of topics, this is the old stuff (useful) ==========
-s

@@ -10,10 +10,20 @@ Anne Ogborn <annie66us@yahoo.com>
 
 link:/swipltuts/index.html[Up to All Tutorials]
 
+This chapter covers some advanced CHR topics.
 
 Advanced CHR syntax
 * pragmas
 * modes and types
+* performance
+* tools 
+pragmas
+name
+performance
+modes
+types
+tools - all the recursive top level, ss, noss etc tools
+
 
 Performance
 -----------
@@ -31,7 +41,6 @@ subsumer(A, B) :-
     , =@=(B, BCopy)
     .
 
-    /*
 ?- fc(my_con(A, 3, B)),
 fc(my_con(B, 3, C)).
 
@@ -42,7 +51,21 @@ fc(my_con(B, 3, C)).
 :- chr_constraint my_con(+dense_int, +dense_int, +dense_int).
 ----
 
+repeat this
+single threaded
+mention falco's server and the LD45 server
+
 
 don't chr for no reason.
+
+pragmas
+name
+performance
+modes
+types
+tools - all the recursive top level, ss, noss etc tools
+
+all in here
+https://dtai.cs.kuleuven.be/CHR/files/CHR_cheatsheet.pdf
 
 

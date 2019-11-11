@@ -231,9 +231,10 @@ We keep making salt water until we can't, and then we stop stirring.
 =====================================================================
 Try all the above examples in this section.
 
-If we try making salt water in a metal bucket, the bucket will rust.
-Add a new CHR constraint `rust/0` which is added to the store when `salt_water` is
-present.
+If we leave the salt water for `time`, it will evaporate back to `salt`.
+Add a new CHR constraint `time/0` and when you have `salt_water` and `time`
+return to `salt`. When you have `water` and time, go back to nothing (put true
+on the right).
 ======================================================================
 
 Basic CHR syntax
@@ -319,11 +320,11 @@ foo(A), get_foo(A) ==> true.
 Assume we have `foo(3)` in the store.
 This still doesn't work because CHR does:
 
-.Prolog adds `get_foo(X)` with X unbound
-.CHR looks for a rule to fire. It finds `foo(3)` in the store and grounds A to 3.
-.CHR then looks for `get_foo(3)` (since we've bound the variable), and, while there's a `get_foo` with an **unbound variable**, there isn't one with a 3. Oops.
+. Prolog adds `get_foo(X)` with X unbound
+. CHR looks for a rule to fire. It finds `foo(3)` in the store and grounds A to 3.
+. CHR then looks for `get_foo(3)` (since we've bound the variable), and, while there's a `get_foo` with an **unbound variable**, there isn't one with a 3. Oops.
 
-Getting information back from the store to Prolog is covered in [[Getting]].
+Getting information back from the store to Prolog is covered in [Getting](http://#Getting).
 
 Operator
 ~~~~~~~~
@@ -373,7 +374,7 @@ Guard
 Until now we've just been putting a CHR constraint on the right hand side. On one occasion
 we used `true`. But the right hand side is much more flexible.
 
-We haven't used a gaurd yet.  A _guard_ is an optional prolog query. If it succeeds, and if the appropriate
+We haven't used a guard yet.  A _guard_ is an optional prolog query. If it succeeds, and if the appropriate
 constraints are in the store to match the left hand side, then, and only then, will the rule fire.
 
 Suppose we have a bunch of constraints like `quake(Intensity)`. Our instrument is quite sensitive, and we
@@ -428,9 +429,10 @@ This guard can change if we add `more_than_3(X)` and then later **ground X**.
 When CHR encounters such a guard, the rule does not fire, but a **unification hook** is attached to the variable. When the variable later grounds, the rule fires. This may cause **prolog** to fail at this point.
 
 This allows us to build **constraint systems**. 
+
 Note that the above code says 'middle', and only fails when X is bound.
 
-Since we can later change the constraint we can develop very efficient constraint checkers.
+Since we can later change the constraint we can develop efficient constraint checkers.
 If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard the weaker constraint.
 
 ----
@@ -489,11 +491,14 @@ This makes the store more _stable_. You needn't worry about some unrelated actio
 [Exercise]
 .Exercise - Does this terminate?
 =====================================================================
+
+----
 :- chr_constraint moo/0,bar/0.
 
 moo ==> bar.
 
 ?- moo.
+----
 
 Think about this. If I add moo then I make bar, then look for another
 rule, find the same one, and _keep going_? No? (think about it, then
@@ -530,7 +535,7 @@ Notice that what it will NOT do is try other valures or go on to the next rule. 
 .Exercise - Demonstrate failure
 =====================================================================
 Fiddle about and demonstrate failure.
-what happens if you add a constraint to the store and then fail?
+what happens if you add a constraint to the store and then have the original calling prolog fail?
 
 For that matter, what happens if you throw?
 

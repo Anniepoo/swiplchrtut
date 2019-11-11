@@ -30,11 +30,13 @@ This tutorial is divided into 5 chapters.
 .. Threads
 .. Getting
 .. Helpful Utilities
-. Constraint Systems
 . Examples and Patterns
 .. A set of worked examples 
 .. That can be used as exercises
 .. And demonstrate common patterns
+. Constraint Systems
+.. Review
+.. A Simple Constraint System
 . Advanced material
 .. advanced syntax
 .. modes
@@ -128,7 +130,7 @@ program. That's how I learned this material, largely.
 
 [Clone the repo](https://github.com/Anniepoo/swiplchrtut) for this tutorial. Some of the examples are available in the **examples** directory.
 
-Seek out other tutorials. Tom Schrijvers Slide set from his ICLP presentation is particularly useful.
+Seek out other tutorials. [Tom Schrijvers Slide set from his ICLP presentation](https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf) is particularly useful.
 
 As you start to see what you can do with CHR, develop a goal. Learning is more fun when it's for a specific purpose.
 
@@ -176,7 +178,7 @@ salt_water.                                          <5>
 <4> query that adds salt and water to the store.
 <5> CHR prints the contents of the store at the top level by default. The store contains salt_water.
 
-[NOTE]
+[EXERCISE]
 .Exercise - Punch and Run
 =====================================================================
 Run the above salt water example.

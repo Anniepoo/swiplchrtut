@@ -21,6 +21,7 @@ This chapter covers no truly new material, but should help you find some useful 
 ** generate and filter
 ** actions and state
 ** collection/aggregation
+** speeding up graph traversal
 ** backtracking for labeling
 . Implementing Things in CHR
 
@@ -215,6 +216,39 @@ go(X) :- load_it, do_sum_foo, find_chr_constraint(sum_foo(X)).   <6>
 <6> convenience predicate to run the system. 
 
 
+Speeding Up Graph Traversal
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you have a small graph you traverse many times, it may be worth adding edges
+to directly go to indirectly reachable nodes.
+
+----
+% make all connected edges
+% if you have a-b b-c c-d
+% add a-c b-d a-d 
+
+:- chr_constraint node/2.
+node(A,B) \ node(A,B) <=> true.     % anti-cycle
+
+node(A,B), node(B,C) ==> node(A,C).
+
+?- node(1,2), node(2,3), node(3,1).
+
+query(5, 2, X).
+
+:- chr_constraint query(+, +, -). % uses material from advanced chapter
+node(A,D), node(B,E)
+\ query(A,B,C)
+<=> C is E + D.
+----
+
+Backtracking for Labeling
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Constraint systems usually provide a `label` predicate to force grounding of all variables.
+
+CHR's reversal on backtracking provides a nice way of writing a labeling predicate for your
+constraint system.
 
 Implementing Things in CHR
 --------------------------
@@ -662,25 +696,25 @@ design_check, pin_not_checked(t) <=> fail. % or do whatever's appropriate when t
 we need `design_check` because the design won't be valid until we've added all the wires.
 
 Implication
------------
+~~~~~~~~~~~
 
 Things imply other things. This is at the heart of the forward chaining nature of CHR.
 
 Tech Tree
-~~~~~~~~~
+^^^^^^^^^
 
 An AI player for a game with a 'tech tree', where players must build the **tank_factory** to build tanks. Seeing a **tank** means they have the **tank_factory**.
 
 This example is available in the examples folder of this tutorial.
 
 Reasoning about mutable state
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A satellite imagery analysis system sees a combine in a field. That implies the crop is being harvested.
 During harvest season the local grain elevator will be full. A train will come to empty the elevator.
 
 PCB Traces
-~~~~~~~~~~
+^^^^^^^^^^
 
 ----
 wire(T1, T2), location(T1, X1, Y1), location(T2, X2, Y2) ==>
@@ -716,124 +750,16 @@ Now searches of the database don't require rules with multiple heads.
 
 Of course this is a memory/speed tradeoff.
 
+Conclusion
+----------
 
-<<TODO>> end this chapter, remove or incorporate material below
+It's impossible to learn CHR without doing a lot of work in it. Hopefully this chapter has given
+you some experience with real CHR programs.
 
+You're now ready to move on to the [Advanced](/advanced.html) material.
 
-* Dynamic type systems. 
-** True type systems
-** constraints as a substitute for 'real' type systems.
-
-
-<<TODO>> - go back to the 'things you can build' from intro and explain how to build each one
-
+If you haven't worked through the [Constraint Systems](/constraintsystems.html) chapter, I suggest doing that before doing the advanced material.
 
 
-[Exercise]
-.Exercise - radioactive decay
-=====================================================================
-We have some isotope `americium_241` which decays to `neptunium_237` and `helium_4`.
-
-we init some americium into the system, and then time in `tick`s passes. At each `tick`
-randomly 10% of the remaining americium decays.
-
-Simulate this system using CHR.
-
-?- americium_241,americium_241,americium_241,americium_241,americium_241,tick,tick,tick.
-americium_241,
-americium_241,
-americium_241,
-neptunium_237,
-helium_4,
-neptunium_237,
-helium_4.
-
-stretch goal - Pick something whose daughter products are unstable and make
-a similar simulator for it, decaying the daughters along with the parent.
-
-=====================================================================
-
-
-Tech Tree
-~~~~~~~~~
-
-This example solves questions about
-"tech trees" using Constraint Handling Rules
-
-Tech Trees are a common game mechanic where the player,
-or AI opponent, must build a specific building or unit
-before they can build another.
-Seeing a unit, the opposing player can then infer that
-their opponent possesses all the units needed to
-So, for example, if building tanks requires the tank factory,
-and the tank factory requires the foundry, then if we see a tank
-we can infer they have the foundry.
-
-Our logic doesn't take into account later destruction of units.
-Even if we blow up the tank factory, can we be sure they don't have others?
-
-----
-
-Pattern - Adjacency
-~~~~~~~~~~~~~~~~~~~
-
-when data comes in as an ordered list we can store it in a constraint like
-
-----
-data(Prev, Index, Value)
-----
-
-and find adjacent values with a rule like
-
-----
-data(N, _, V2), data(_, N, V1) ==> ... .
-----
-
-[Exercise]
-.Exercise - Sawtooth waves
-=====================================================================
-Data is provided in a list like this:
-[0,1,2,3,5,6,6,7,8,1,2,3,4,6,7,8,3,...]
-the data is sawtooths - the value rises gradually, then drops suddenly
-
-End with a set of constraints drop(N) in the store, recording the points where
-the data drops.
-
-Stretch goal - assume there's a small amount of noise in the data. Only record drops larger than 
-a threshold passed in.
-
-Ultra stretch goal - sometimes the DAC will catch a value during the fall
-[1,2,3,4,5,6,7,**5**,1,2,3,4,4,5]
-
-fix your program so it catches these as well.
-=====================================================================
-
-
-
-* cellular automaton from schrijvers slides  slide 82
-* parsing - words
-* recipe reasoner using drinks
-* ref ld45
-* radioactive decay
-% given half lives, put in atoms and watch'em decay
-% keeping track of time
-adventure game.
-'properly dressed' puzzle
-Schrijvers 83 - example of 'generate and filter' pattern (56 for generate pattern)
-constraint system example.
-
-Useful patterns
-* get_foo
-* constraint system
-* adjacency
-* generate and filter
-* collection
-* backtracking for labeling
-* using order for recognition priority
-
-More examples
-
-Reactivation - see Schrijvers slide 96
-* domain constraint from slides 96
 
 

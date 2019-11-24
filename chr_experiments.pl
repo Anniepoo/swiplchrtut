@@ -26,7 +26,7 @@ mep(L) ==> foreach(member(X, L), zap(X)).
 
 nord ==> \+ find_chr_constraint(noodge) | dingle.
 
-better
+% better
 nord, noodge  ==> true.
 nort ==> dingle.
 
@@ -85,7 +85,7 @@ get_foo(_) <=> fail.
 
 % Yay, backtracking get that ACTUALLY WORKS
 
-========== entire file =========
+% ========== entire file =========
 :- use_module(library(chr)).
 
 :- chr_constraint foo/1,one_foo/1, collect_foo/1, get_foo/1.
@@ -132,7 +132,7 @@ foo(7),
 foo(3),
 foo(1).
 
-?- 
+?-
 
 So, this is ugly as hell, but works
 

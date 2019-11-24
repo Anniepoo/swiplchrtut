@@ -18,6 +18,7 @@ This chapter covers no truly new material, but should help you find some useful 
 ** constraint system
 ** adjacency
 ** set semantics
+** uniqueness
 ** generate and filter
 ** actions and state
 ** collection/aggregation
@@ -143,6 +144,22 @@ Add a rule
 light_on \ light_on <=> true.
 ----
 
+Uniqueness
+~~~~~~~~~~
+
+Want to enforce uniqueness?
+
+Heather has two mommies, but only one biological mother.
+
+----
+bio_mom_of(X,Y) \ bio_mom_of(Z, Y) <=> X = Z.
+----
+
+First, we are demanding that if there are two `bio_mom` constraints for a child,
+then they must be for the same person. That's a long winded way of saying "only one bio_mom".
+
+Second, we are enforcing set semantics - if they are the same, we discard one.
+
 Generate and Filter
 ~~~~~~~~~~~~~~~~~~~
 
@@ -179,6 +196,19 @@ The general pattern is:
 
 Collection/Aggregation
 ~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to **maintain** an aggregate total, you can detect adding and removing
+the constraint:
+
+----
+% add and remove foo's with numeric argument, keeping running total
+:- chr_constraint foo/1, total_foo/1, unfoo/1.
+
+total_foo(A), total_foo(Total) <=> NewTotal is A + Total, total_foo(NewTotal). 
+foo(A) ==> total_foo(A).
+
+unfoo(A), foo(A), total_foo(Total) <=> NewTotal is Total - A, total_foo(NewTotal).
+----
 
 You can do aggregation / foldl / collection in the same way get_foo works.
 
@@ -752,6 +782,8 @@ Of course this is a memory/speed tradeoff.
 
 Conclusion
 ----------
+
+Some additional examples are available at the [WebCHR Online CHR Tool](http://chr.informatik.uni-ulm.de/~webchr/)
 
 It's impossible to learn CHR without doing a lot of work in it. Hopefully this chapter has given
 you some experience with real CHR programs.

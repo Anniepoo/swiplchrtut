@@ -21,6 +21,7 @@ Advanced CHR
 * CHR options
 * modes and types
 * pragmas
+* modules
 * performance
 * tools
 
@@ -37,6 +38,8 @@ See CHR Cheatsheet for more info.
 
 Modes and Types
 ---------------
+
+Providing **mode** (in, out, either + - ?) and **type** information can speed up CHR performance, and provides type checking for program correctness.
 
 The CHR Cheatsheet coverage of this material is not as good as the [CHR page on swi-prolog.org](https://www.swi-prolog.org/pldoc/man?section=practical). I suggest reading that first, particularly the section on types and modes, and only then read the material in the CHR Cheatsheet.
 
@@ -64,7 +67,39 @@ for doing this efficiently.
 Modules
 -------
 
-<<TODO>>research
+So far we've not discussed modules.
+
+When a CHR constraint is defined in a module, it is module qualified.
+
+The usual module/use_module/export pattern works
+
+in `modulea.pl`
+----
+:- use_module(moduleb).
+
+:- chr_constraint in_a/0.
+
+in_a ==> in_b.
+
+:- chr_constraint call_private/0.
+
+call_private ==> moduleb:private_b.
+----
+
+in `moduleb.pl`
+----
+:- module(moduleb, [in_b/0]).
+
+:- use_module(library(chr)).
+
+:-chr_constraint in_b/0, private_b/0.
+
+in_b ==> writeln('made in_b').
+
+private_b ==> writeln('in private b').
+----
+
+The predicate `find_chr_constraint` doesn't handle modules. Use [`current_chr_constraint`](https://www.swi-prolog.org/pldoc/doc_for?object=chr_runtime%3Acurrent_chr_constraint/1)
 
 Performance
 -----------
@@ -128,7 +163,7 @@ card(A), card(B), card(C), card(D), card(E) ==>
          succ(D,E) | straight.
 ----
 
-This apparently reasonable constraint operates VERY slowly. If you have 7 cards, it will arrange the cards in **2,520 ways** and rerun the guard for each.
+This apparently reasonable constraint operates VERY slowly. If you have 7 cards, as in _7 card stud_, it will arrange the cards in **2,520 ways** and rerun the guard for each.
 
 ----
 ?- time(card(2)),card(4),card(3),card(5),time(card(6)).
@@ -136,7 +171,7 @@ This apparently reasonable constraint operates VERY slowly. If you have 7 cards,
 % 8,378 inferences, 0.001 CPU in 0.001 seconds (100% CPU, 9221480 Lips)
 ----
 
-Here's a faster version
+Here's a faster version:
 
 ----
 :- chr_constraint adj_pair/2, adj_triple/2.
@@ -190,17 +225,14 @@ Tools
 
 There are some useful tools available for CHR.
 
-[WebCHR](<<TODO>>) is useful for experimenting with CHR, and has some more academic
-oriented examples.
+[WebCHR](http://chr.informatik.uni-ulm.de/~webchr/) is useful for experimenting with CHR, and has some more examples.
 
 At times CHR's single threaded nature can be painful. 
-[Falco Nogatz](<<TODO>>) has created a server that single threads CHR calls.
-For many applications, it might be better to start with the [Ludum Dare Team 45 Server](<<TODO>>)
+[Falco Nogatz](https://github.com/fnogatz/CHR-Constraint-Server) has created a server that single threads CHR calls.
+For http applications, it might be better to start with the [Ludum Dare Team 45 Server](https://github.com/SWI-PrologTeamLudumDare32/LudumDare45)
 largely copied from Falco's, but turned into an HTTP server.
 
-[Michael Richter](<<TODO>>) has created a universal version of `get_foo/1`.
-
-The official [CHR Website](<<TODO>>) is a resource for both information and tools.
+The official [CHR Website](https://dtai.cs.kuleuven.be/CHR/) is a resource for both information and tools.
 
 Some of these tools use the optional **name** you can apply to CHR rules:
 
@@ -208,31 +240,87 @@ Some of these tools use the optional **name** you can apply to CHR rules:
 my_rule @ foo <=> bar.
 ----
 
-<<TODO>>Using the chr debugger.
+Using the CHR debugger
+~~~~~~~~~~~~~~~~~~~~~~
 
-<<TODO>>all the recursive top level, ss, noss etc tools
+The SWI graphical debugger interacts poorly with CHR, displaying the compiled code.
 
-<<TODO>> Research tools
+The text based [CHR debugger](https://www.swi-prolog.org/pldoc/man?section=debugging) is fairly straightforward.
 
-<<TODO>> resources - off chr website, swi-prolog.org, and wikipedia.
+I never found the _leashing_ options that useful with the Prolog text debugger, but they are quite useful with the CHR debugger. 
 
+This handy pattern prints out the execution of CHR without stopping.
 
+----
+% print out execution without pausing
+?- chr_leash(-all).  chr_trace.  query(2,3,N).
+----
 
-repeat this
-single threaded
-mention falco's server and the LD45 server
+Simple Tools
+~~~~~~~~~~~~
 
+I also find it useful to have some simple tools in my startup.
 
-don't chr for no reason.
+----
 
-pragmas
-name
-performance
-modes
-types
-tools - all the recursive top level, ss, noss etc tools
+		 /*******************************
+		 *     helpful utilities        *
+		 *******************************/
 
-all in here
-https://dtai.cs.kuleuven.be/CHR/files/CHR_cheatsheet.pdf
+% print out the constraint store
+ps :-
+    find_chr_constraint(Y),
+    format('constraint store contains ~w~n', [Y]),
+    fail.
+ps.
+
+% print out constraint store when you return to top level
+ss :- set_prolog_flag(chr_toplevel_show_store, true).
+
+% or don't
+noss :- set_prolog_flag(chr_toplevel_show_store, false).
+----
+
+An easy way to switch between production and debug (see above in 'CHR Options') is
+useful for debug.
+
+Top Level Removes Residual Constraints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CHR removes all residual constraints when you return to the top level.
+This can be annoying when trying to debug or program at the interactor.
+
+SWI-Prolog has a special toplevel mode just for preventing this:
+
+----
+% saner way to do same
+?- set_prolog_flag(toplevel_mode, recursive).
+----
+
+An alternative to this is Falco Nogatz's [CHR Constraint Store](https://github.com/fnogatz/CHR-Constraint-Store) that provides a CHR repl.
+
+CHR to JS compiler
+~~~~~~~~~~~~~~~~~~
+
+Falco Nogatz has a [CHR to JavaScript compiler](https://github.com/fnogatz/CHR.js).
+
+There is a [website for this project](http://chrjs.net/).
+
+CHR to SQL compiler
+~~~~~~~~~~~~~~~~~~~
+
+A similar compiler exists that [converts CHR to SQL](https://github.com/awto/chr2sql).
+
+Conclusion
+----------
+
+Here's a truly advanced CHR trick.  CHR is available embedded in many languages.
+
+Since CHR **looks** more like a library than a language, your day job may have less resistance.
+
+Once you're using CHR, well, the camel's got it's nose in the tent.
+
+On to the [Final Section](/final.html)
+
 
 

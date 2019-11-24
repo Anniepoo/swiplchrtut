@@ -134,8 +134,23 @@ Seek out other tutorials. [Tom Schrijvers Slide set from his ICLP presentation](
 
 As you start to see what you can do with CHR, develop a goal. Learning is more fun when it's for a specific purpose.
 
-Don't panic if you don't get it at first. The syntax of CHR is fairly simple, but there are lots of small 
-gotchas in the actual use.
+Once you have a basic grasp, the [debugger](https://www.swi-prolog.org/pldoc/man?section=debugging) can be useful. Placing writelns in bodies can also be useful. CHR prints out it's residual constraints, I suggest printing somethign along with your debug writelns to distinguish yours from CHR's.
+
+Develop a **cheat sheet** for yourself. When learning, I found it useful to paste this comment, which gives the basic CHR syntax and what is kept and discarded, into my code:
+
+----
+/*
+ *  CHR syntax, since I can never remember it:
+ *  name @ retained \ discarded <=> guard | head,body.    Simpagation
+ *  name @ discarded <=> guard | head, body.      Simplification
+ *  name @ retained ==> guard | head, body.         Propagation
+ *
+*/
+----
+
+At the bottom of the [Advanced](/advanced.html) chapter is a collection of tools. Some may be useful as you learn.
+
+Don't panic if you don't get it at first. The syntax of CHR is fairly simple, but its a new paradigm and there are lots of small gotchas in the actual use.
 
 CHR myths
 ~~~~~~~~~

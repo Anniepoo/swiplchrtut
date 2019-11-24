@@ -1,0 +1,16 @@
+sources
+
+
+https://www.informatik.uni-ulm.de/pm/fileadmin/pm/home/fruehwirth/chr-book-slides-chap1.pdf
+
+https://www.swi-prolog.org/pldoc/man?section=guidelines
+
+
+https://www.swi-prolog.org/pldoc/man?section=sicstus-chr
+
+https://zalo.github.io/blog/constraints/
+
+https://zalo.github.io/blog/constraints/
+
+find_chr_constraint doesn't handle modules.
+https://www.swi-prolog.org/pldoc/doc_for?object=chr_runtime%3Acurrent_chr_constraint/1

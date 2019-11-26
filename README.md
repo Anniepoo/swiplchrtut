@@ -5,12 +5,21 @@ This is part of the tutorials served at [Pathways tutorials](http://www.pathways
 This is a tutorial that teaches Thom Freuwirth's CHR system that comes as part of the standard **SWI-Prolog
 distribution.
 
+## Install
+
+Install asciidoctor
+
+make a directory /etc/asciidoc/themes/pathways
+
+copy the contents of the pathways directory under the project root into this dir
+
+
 ## Building
 
-to rebuild the web pages, compile all files with asciidoc
+to rebuild the web pages, compile all .md files with asciidoc
 
 ````
-asciidoc index.md >index.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ final.md >final.html
 ````
 
 and serve.

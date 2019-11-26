@@ -9,6 +9,12 @@ Anne Ogborn <annie66us@yahoo.com>
 :theme: pathways
 
 link:/swipltuts/index.html[Up to All Tutorials]
+link:index.html[Introduction]
+link:basics.html[Basics]
+link:examples.html[Examples]
+link:constraintsystems.html[Constraint Systems]
+link:advanced.html[Advanced]
+link:final.html[Final]
 
 Interesting Uses
 ----------------
@@ -47,11 +53,16 @@ This tutorial, like most of my tutorials, came from my own desire to understand 
 So I've been somewhere between a constant questioner and an outright pest to many in the CHR
 community for the past few months.
 
-Thanks to Thom Fruewirth for the CHR library and for answering questions on the CHR list and email. 
-Thanks to Alan Baljeu for much patient coaching on the CHR list and for spending an evening on video call explaining CHR.
-Thanks to Falco Nogatz for yet more explanations, and for many contributions to the CHR ecosystem.
-Thanks to Tom Schrijvers, whose slides from ICLP are a great resource. I've also stolen a few examples in this tutorial from his work. 
-Thanks to Michael Richter, who puzzled out bits of this with me and in particular how the right hand side works. 
+Thanks to Thom Fruewirth for the CHR library and for answering questions on the CHR list and email.
+
+Alan Baljeu gave much patient coaching on the CHR list, and spent an evening on video call explaining CHR.
+
+Falco Nogatz provided yet more explanations, as well as many contributions to the CHR ecosystem.
+
+Tom Schrijvers slides from ICLP are a great resource. I've also stolen a few examples in this tutorial from his work.
+
+Michael Richter and I puzzled out bits of this together. In particular Michael figured out how the right hand side works.
+
 Thanks to Gergö Barany for a pleasant afternoon in Vienna spent puzzling out bits of CHR.
 
 

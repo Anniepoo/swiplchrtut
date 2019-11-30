@@ -54,7 +54,8 @@ and so on.
 
 If one of the reactivated rules fails, then the **unification fails in the original Prolog that caused the unification**.
 
-This allows us to build **constraint systems**.  If you're not familiar with constraint systems, check out [my clp(fd) tutorial](http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html).
+This allows us to build **constraint systems**.  If you're not familiar with constraint systems, check out 
+link:http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html[my clp(fd) tutorial].
 Note that the above code says 'middle', and only fails when X is bound.
 
 Since we can later change the constraint we can develop very efficient constraint checkers.
@@ -111,9 +112,9 @@ cl_min_len(X, MinLen) <=>           <1>
          length(X, Len), 
          Len >= MinLen.             <3>
 ----
-<1>Use a simplification rule, since when it fires we don't need the constraint after.
-<2>Check that both are bound before firing the rule.
-<3>Now make sure the constraint holds when the rule fires.
+<1> Use a simplification rule, since when it fires we don't need the constraint after.
+<2> Check that both are bound before firing the rule.
+<3> Now make sure the constraint holds when the rule fires.
 
 [Exercise]
 .Exercise - Ascending
@@ -173,8 +174,12 @@ Conclusion
 Building constraint systems was the original application of CHR, and is still an important application.
 If you don't see yourself using constraint systems, consider that dynamic types are just constraint systems.
 
-You're now ready to move on to the [Advanced](/advanced.html) material.
+You're now ready to move on to the 
+link:advanced.html[Advanced]
+material.
 
-If you haven't worked through the [Examples](/examples.html) chapter, I suggest doing that before doing the 
+If you haven't worked through the 
+link:examples.html[Examples]
+chapter, I suggest doing that before doing the 
 advanced material.
 

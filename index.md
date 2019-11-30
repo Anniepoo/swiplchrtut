@@ -212,5 +212,6 @@ Make tea. Tea is made of water, sugar, and tea_bag.
 Conclusion
 ----------
 
-With some preliminaries out of the way, we're ready to dive into [The Basics of CHR](basics.html)
+With some preliminaries out of the way, we're ready to dive into 
+link:basics.html[The Basics of CHR]
 

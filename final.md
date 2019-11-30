@@ -1,5 +1,5 @@
-Tutorial - CHR Constraint Handling Rules - Conclusion and Test
-==============================================================
+Tutorial - CHR Constraint Handling Rules - Conclusion
+=====================================================
 Anne Ogborn <annie66us@yahoo.com>
 :Author Initials: AO
 :toc2:
@@ -21,20 +21,27 @@ Interesting Uses
 
 There have been quite a few large systems built with CHR over the years.
 
-[SecuritEase](https://www.securitease.com/), often cited as a Prolog user, has various portions of its' system in CHR. Inside SecuritEase CHR [is used to](https://dtai.cs.kuleuven.be/projects/CHR/papers/draft_chr_survey.pdf):
+link:https://www.securitease.com/[SecuritEase], often cited as a Prolog user, has various portions of its' system in CHR. Inside SecuritEase CHR 
+link:https://dtai.cs.kuleuven.be/projects/CHR/papers/draft_chr_survey.pdf[is used to]
+:
 
-1.  implementing the logic to recognize advantageous market conditions to auto-
+1.  implement the logic to recognize advantageous market conditions to auto-
 matically place orders in equity markets,
-2.  translating high-level queries to SQL,
-3.  describing complex relationships between mutually dependent fields on user
+2.  translate high-level queries to SQL,
+3.  describe complex relationships between mutually dependent fields on user
 input screens, and calculating the consequences of user input actions, and
-4.  realizing a Financial Information eXchange (FIX) server.
+4.  realize a Financial Information eXchange (FIX) server.
 
-Some Prolog folks, Falco Nogatz and Christian Hieke, won first place in a [Deutsche Bahn Open Data Hackathon](http://www1.informatik.uni-wuerzburg.de/en/news/single/news/improving-deutsche-bahn-with-prolog/) with a system that analyzed the fares of the German National Railways and discovered several places where it was cheaper to buy a ticket part way, then another ticket on the same train to one's final destination.
+Some Prolog folks, Falco Nogatz and Christian Hieke, won first place in a 
+link:http://www1.informatik.uni-wuerzburg.de/en/news/single/news/improving-deutsche-bahn-with-prolog/[Deutsche Bahn Open Data Hackathon]
+with a system that analyzed the fares of the German National Railways and discovered several places where it was cheaper to buy a ticket part way, then another ticket on the same train to one's final destination.
 
-Some Prolog folks enter the large [Ludum Dare](ldjam.com) game jam when it comes around. The October 2019 entry used CHR to recognize hand drawn houses as part of a game.
+Some Prolog folks enter the large 
+link:http://ldjam.com[Ludum Dare] game jam when it comes around. The October 2019 entry used CHR to recognize hand drawn houses as part of a game.
 
-Falco Nogatz has an interesting [linear equation solver](https://github.com/fnogatz/CHR-Linear-Equation-Solver).
+Falco Nogatz has an interesting 
+link:https://github.com/fnogatz/CHR-Linear-Equation-Solver[linear equation solver]
+.
 
 
 Conclusion

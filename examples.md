@@ -294,6 +294,7 @@ let's look at how we'd implement most of these. I omitted a few as being obvious
 writing constraint systems
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+[[subsume]]
 When constraint B subsumes constraint A, discard A for better performance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -325,7 +326,7 @@ Build a constraint system like clp(fd)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Obviously this is beyond the scope of a tutorial, but there are examples in the chapter on
-[Constraint Systems](constraintsystems.html)
+link:constraintsystems.html[Constraint Systems]
 
 Build a type system
 ~~~~~~~~~~~~~~~~~~~
@@ -343,7 +344,8 @@ must_be_int(X, Context) <=> ground(X) | throw(error(type_error(integer, X), Cont
 ----
 
 Constraint systems are often far faster than hand rolled algorithms
-See [[When constraint B subsumes constraint A, discard A for better performance]]
+See 
+xref:subsume[When constraint B subsumes constraint A, discard A for better performance]
 
 Making programs where things transform into things
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -471,7 +473,7 @@ pick_up <=> writeln('nothing to pick up here').
 % printing
 
 % make the living_room description change when the key's picked up
-key \ description(living_room, _) <=> description(living_room, Bob\'s living room. The picture matches his sofa.').
+key \ description(living_room, _) <=> description(living_room, 'Bob\'s living room. The picture matches his sofa.').
 
 % print the player's location
 player(Loc), description(Loc, Desc) ==> writeln(Desc).
@@ -487,6 +489,7 @@ A few subtleties - The **look** command uses the order to ensure we process ever
 the player's location description, and then tell the player they're carrying the key if they are.
 Then we destroy the look command.
 
+[[bottomup]]
 bottom up recognizers - input characters to words to clauses to sentences to paragraphs.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -549,19 +552,24 @@ Letters are includeded in the current partial word and **then discarded**.
 Note also that I uses `partial_word_word/2` to convert the list - there seemed little point in doing
 this in CHR. The Prolog is both more efficient and easier to write.
 
-
+[[postcomplex]]
 A web application where POST requests modify the store, subject to complex constraints.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Of course a web application is a bit complex for a tutorial. I'll refer you to an example.
 
-[SWi-Prolog](https://swi-prolog.org/) occasionally organizes teams to participate in [Ludum Dare](ldjam.com),
-a large international game jam competition.
+link:http://swi-prolog.org[SWi-Prolog]
+occasionally organizes teams to participate in 
+link:ldjam.com[Ludum Dare]
+,a large international game jam competition.
 
 In summer 2019 the team built a fun little game where you draw childs drawing 'houses' to save a little pig
-from a bad wolf. The [source code is here](https://github.com/SWI-PrologTeamLudumDare32/LudumDare45).
+from a bad wolf. The 
+link:https://github.com/SWI-PrologTeamLudumDare32/LudumDare45[source code is here].
 
-The front end of the game is in [Snap!](https://snap.berkeley.edu/), a visual programming environment of the 'drag blocks' type.
+The front end of the game is in 
+link:https://snap.berkeley.edu/[Snap!]
+, a visual programming environment of the 'drag blocks' type.
 
 an alternative to setting up Snap! locally (which is easy) is to use curl to exercise the system.
 
@@ -597,7 +605,8 @@ Writing **Recognizers**
 
 A **Recognizer**, for our purposes, is a CHR program that takes some input and 'finds' a pattern within it.
 
-For an example of doing more general recognition, see the game referenced in [[A web application where POST requests modify the store, subject to complex constraints.]]
+For an example of doing more general recognition, see the game referenced in 
+xref:postcomplex[A web application where POST requests modify the store, subject to complex constraints.]
 
 A traditional bottom up parser
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -607,7 +616,9 @@ Isn't your 'recognizer' just a parser?
 Yes, it is, but we associate parsers so strongly with objects that are ordered, like an input string, that I've used
 a different word for 'find things in this mass of unordered data'.
 
-For an example of doing traditional parsing in CHR, see [[bottom up recognizers - input characters to words to clauses to sentences to paragraphs.]] above.
+For an example of doing traditional parsing in CHR, see 
+xref:bottomup[bottom up recognizers - input characters to words to clauses to sentences to paragraphs.]
+ above.
 
 A computer vision system that recognizes simple objects like a chimney, a door, etc. and combines them to make 'house'.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -674,7 +685,8 @@ recognizers in expert systems
 
 Suppose we have a medical expert system. 
 
-[Acute abdomen](https://en.wikipedia.org/wiki/Acute_abdomen) is a serious medical emergency with many possible causes.r
+link:https://en.wikipedia.org/wiki/Acute_abdomen[Acute abdomen] 
+is a serious medical emergency with many possible causes.
 Before we can proceed to a diagnosis, we have to recognize that the patient does indeed have _acute abdomen_.
 
 * patient must have severe abdominal pain
@@ -685,8 +697,7 @@ Before we can proceed to a diagnosis, we have to recognize that the patient does
 ** fever
 
 Once we've recognized _acute abdomen_ we can reason about possible causes and figure out what tests to run first.
-
-(obviously, don't use this CHR tutorial for medical advice. See a doctor.)
+(**obviously**, don't use this CHR tutorial for medical advice. See a doctor.)
 
 resource utilization - I have an extra gate on this IC and need one for this.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -788,14 +799,18 @@ Of course this is a memory/speed tradeoff.
 Conclusion
 ----------
 
-Some additional examples are available at the [WebCHR Online CHR Tool](http://chr.informatik.uni-ulm.de/~webchr/)
+Some additional examples are available at the 
+link:http://chr.informatik.uni-ulm.de/~webchr/[WebCHR Online CHR Tool]
 
 It's impossible to learn CHR without doing a lot of work in it. Hopefully this chapter has given
 you some experience with real CHR programs.
 
-You're now ready to move on to the [Advanced](/advanced.html) material.
+You're now ready to move on to the 
+link:advanced.html[Advanced] material.
 
-If you haven't worked through the [Constraint Systems](/constraintsystems.html) chapter, I suggest doing that before doing the advanced material.
+If you haven't worked through the 
+link:constraintsystems.html[Constraint Systems]
+chapter, I suggest doing that before doing the advanced material.
 
 
 

@@ -417,7 +417,8 @@ CHR compiler will flag it.
 This material requires understanding constraint programming.
 If you don't, you can skip over it and know you just shouldn't 
 bind variables in the guard.
-Alternatively, check out  [my clp(fd) tutorial](http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html).
+Alternatively, check out 
+link:http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html[my clp(fd) tutorial]
 =================================================================
 
 Guards have one other very useful property - **Reactivation**. We might have a guard whose success can change
@@ -625,9 +626,12 @@ This is particularly painful when implementing a server that uses CHR.
 
 One solution is to do all the CHR work on a special thread. 
 
-Falco Nogatz's [CHR-Constraint-Server](https://github.com/fnogatz/CHR-Constraint-Server) is a useful tool.
+Falco Nogatz's 
+link:https://github.com/fnogatz/CHR-Constraint-Server[CHR-Constraint-Server] is a useful tool.
 
-The ['3 Little Pigs' game](https://github.com/SWI-PrologTeamLudumDare32/LudumDare45) is a useful starter for a server that uses CHR for it's logic.
+The 
+link:https://github.com/SWI-PrologTeamLudumDare32/LudumDare45['3 Little Pigs' game]
+is a useful starter for a server that uses CHR for it's logic.
 
 A Pengine will have it's own thread. This can be useful for CHR.
 
@@ -766,9 +770,10 @@ Conclusion
 ----------
 
 This completes the basics of CHR. You should be ready to study 
-[Constraint Systems](constraintsystems.html).
+link:constraintsystems.html[Constraint Systems]
 
-This is also a great time to work some of the [Examples and Patterns](examples.html)
+This is also a great time to work some of the 
+link:examples.html[Examples and Patterns]
 
 Useful references
 

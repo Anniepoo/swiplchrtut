@@ -8,7 +8,14 @@ Anne Ogborn <annie66us@yahoo.com>
 :website: http://www.pathwayslms.com/swipltuts/
 :theme: pathways
 
+
 link:/swipltuts/index.html[Up to All Tutorials]
+link:index.html[Introduction]
+link:basics.html[Basics]
+link:examples.html[Examples]
+link:constraintsystems.html[Constraint Systems]
+link:advanced.html[Advanced]
+link:final.html[Final]
 
 This chapter covers no truly new material, but should help you find some useful ways to use CHR.
 
@@ -118,8 +125,6 @@ token(WordIndex, Letter, word(Word)), token(Letter, Next, word_char(B)) <=>
        token(WordIndex, Next, word(NewWord)).
 token(WordIndex, Next, word_char(A))  <=> token(WordIndex, Next, word([A]))
 ----
-
-<<TODO>>test that
 
 Set Semantics
 ~~~~~~~~~~~~~

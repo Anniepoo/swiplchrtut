@@ -8,7 +8,14 @@ Anne Ogborn <annie66us@yahoo.com>
 :website: http://www.pathwayslms.com/swipltuts/
 :theme: pathways
 
+
 link:/swipltuts/index.html[Up to All Tutorials]
+link:index.html[Introduction]
+link:basics.html[Basics]
+link:examples.html[Examples]
+link:constraintsystems.html[Constraint Systems]
+link:advanced.html[Advanced]
+link:final.html[Final]
 
 
 About This Tutorial

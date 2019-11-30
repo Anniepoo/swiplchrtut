@@ -8,7 +8,14 @@ Anne Ogborn <annie66us@yahoo.com>
 :website: http://www.pathwayslms.com/swipltuts/
 :theme: pathways
 
+
 link:/swipltuts/index.html[Up to All Tutorials]
+link:index.html[Introduction]
+link:basics.html[Basics]
+link:examples.html[Examples]
+link:constraintsystems.html[Constraint Systems]
+link:advanced.html[Advanced]
+link:final.html[Final]
 
 Contents
 --------
@@ -729,15 +736,15 @@ the same thing, but you don't have to remember to do it each time.
 ?- set_prolog_flag(toplevel_mode, recursive).
 ----
 
-`find_chr_constraint/1` is intended for debugging, and is slow.
+`current_chr_constraint/1` is intended for debugging, and is slow.
 Don't use this as a pattern for reading the constraint store.
 but I often add this to my CHR programs as a handy debug tool.
 
 ----
 % print out the constraint store
 ps :-
-    find_chr_constraint(Y),
-    format('constraint store contains ~w~n', [Y]),
+    current_chr_constraint(M:Y),
+    format('constraint store contains ~w:~w~n', [Y]),
     fail.
 ps.
 ----

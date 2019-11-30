@@ -163,6 +163,7 @@ gather_foos_together(Foos), get_thy_foos(Y) ==> Foos = Y.
 		 *******************************/
 
 % print out the constraint store
+%
 ps :-
     find_chr_constraint(Y),
     format('constraint store contains ~w~n', [Y]),

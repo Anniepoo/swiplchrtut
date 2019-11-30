@@ -8,7 +8,14 @@ Anne Ogborn <annie66us@yahoo.com>
 :website: http://www.pathwayslms.com/swipltuts/
 :theme: pathways
 
+
 link:/swipltuts/index.html[Up to All Tutorials]
+link:index.html[Introduction]
+link:basics.html[Basics]
+link:examples.html[Examples]
+link:constraintsystems.html[Constraint Systems]
+link:advanced.html[Advanced]
+link:final.html[Final]
 
 This chapter covers some advanced CHR topics.
 
@@ -71,7 +78,7 @@ So far we've not discussed modules.
 
 When a CHR constraint is defined in a module, it is module qualified.
 
-The usual module/use_module/export pattern works
+The usual module/use_module/export pattern works:
 
 in `modulea.pl`
 ----
@@ -123,7 +130,7 @@ Alan Baljeu provided this snippet:
 fc(X) :-
     functor(X, XF, N),
     functor(Y, XF, N),
-    find_chr_constraint(Y),
+    find_chr_constraint(Y),  % use current_chr_constraint instead in new code
     subsumer(X, Y).
 
 subsumer(A, B) :-
@@ -163,7 +170,7 @@ card(A), card(B), card(C), card(D), card(E) ==>
          succ(D,E) | straight.
 ----
 
-This apparently reasonable constraint operates VERY slowly. If you have 7 cards, as in _7 card stud_, it will arrange the cards in **2,520 ways** and rerun the guard for each.
+This apparently reasonable constraint operates VERY slowly. If you have 7 cards, as in _7 card stud_, it will arrange the cards in **2,520 ways** and rerun the guard for each, since card(A) can be any of 7 cards, card(B) any of the remaining 6, and so on.
 
 ----
 ?- time(card(2)),card(4),card(3),card(5),time(card(6)).
@@ -208,6 +215,7 @@ On my machine `adj_triple/2` from the last section expands to 22 lines
 of Prolog in a single clause.
 =====================================================================
 
+The lesson to be learned is that there is a performance cost to using CHR to do tasks Prolog could do simply.
 
 Adjust Which arguments are Indexed
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -229,6 +237,7 @@ There are some useful tools available for CHR.
 
 At times CHR's single threaded nature can be painful. 
 [Falco Nogatz](https://github.com/fnogatz/CHR-Constraint-Server) has created a server that single threads CHR calls.
+
 For http applications, it might be better to start with the [Ludum Dare Team 45 Server](https://github.com/SWI-PrologTeamLudumDare32/LudumDare45)
 largely copied from Falco's, but turned into an HTTP server.
 
@@ -269,8 +278,8 @@ I also find it useful to have some simple tools in my startup.
 
 % print out the constraint store
 ps :-
-    find_chr_constraint(Y),
-    format('constraint store contains ~w~n', [Y]),
+    current_chr_constraint(Module:Name),
+    format('constraint store contains ~w:~w~n', [Module, Name]),
     fail.
 ps.
 

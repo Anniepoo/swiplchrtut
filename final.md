@@ -21,7 +21,7 @@ Interesting Uses
 
 There have been quite a few large systems built with CHR over the years.
 
-[SecuritEase](https://www.securitease.com/), often cited as a Prolog user, has various portions of it's system in CHR. Inside SecuritEase CHR [is used for](https://dtai.cs.kuleuven.be/projects/CHR/papers/draft_chr_survey.pdf):
+[SecuritEase](https://www.securitease.com/), often cited as a Prolog user, has various portions of its' system in CHR. Inside SecuritEase CHR [is used to](https://dtai.cs.kuleuven.be/projects/CHR/papers/draft_chr_survey.pdf):
 
 1.  implementing the logic to recognize advantageous market conditions to auto-
 matically place orders in equity markets,
@@ -30,9 +30,9 @@ matically place orders in equity markets,
 input screens, and calculating the consequences of user input actions, and
 4.  realizing a Financial Information eXchange (FIX) server.
 
-Some Prolog folks, Falco Nogatz and Christian Hieke, won first place in a [Deutsche Bahn Open Data Hackathon](http://www1.informatik.uni-wuerzburg.de/en/news/single/news/improving-deutsche-bahn-with-prolog/).
+Some Prolog folks, Falco Nogatz and Christian Hieke, won first place in a [Deutsche Bahn Open Data Hackathon](http://www1.informatik.uni-wuerzburg.de/en/news/single/news/improving-deutsche-bahn-with-prolog/) with a system that analyzed the fares of the German National Railways and discovered several places where it was cheaper to buy a ticket part way, then another ticket on the same train to one's final destination.
 
-Some Prolog folks enter the large [Ludum Dare](ldjam.com) game jam when it comes around. The October 2019 entry used CHR to recognize hand drawn shapes.
+Some Prolog folks enter the large [Ludum Dare](ldjam.com) game jam when it comes around. The October 2019 entry used CHR to recognize hand drawn houses as part of a game.
 
 Falco Nogatz has an interesting [linear equation solver](https://github.com/fnogatz/CHR-Linear-Equation-Solver).
 
@@ -53,7 +53,7 @@ This tutorial, like most of my tutorials, came from my own desire to understand 
 So I've been somewhere between a constant questioner and an outright pest to many in the CHR
 community for the past few months.
 
-Thanks to Thom Fruewirth for the CHR library and for answering questions on the CHR list and email.
+Thanks to Thom Fr ̈uhwirth for the CHR library and for answering questions on the CHR list and email.
 
 Alan Baljeu gave much patient coaching on the CHR list, and spent an evening on video call explaining CHR.
 

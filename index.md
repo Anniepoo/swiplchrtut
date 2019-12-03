@@ -59,7 +59,9 @@ This tutorial is for reasonably experienced SWI-Prolog programmers who want to u
 Some parts of the material, notably the chapter on constraint systems, depend on a knowledge of constraint
 programming. 
 
-If you want to understand making constraint systems, at least read the intro chapter of my [clp(fd) tutorial](/swipltuts/clpfd/clpfd.html), the Prolog clpfd library notes,
+If you want to understand making constraint systems, at least read the intro chapter of my 
+link:/swipltuts/clpfd/clpfd.html[clp(fd) tutorial]
+, the Prolog clpfd library notes,
 and the entries for attributed variables in the SWI-Prolog manual.
 
 The emphasis of this tutorial is *not* on the theory. The author
@@ -127,7 +129,8 @@ How Should I study this?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Definitely do **not** linearly read the material from start to end without exploring.
-In particular, check out the [Examples](examples.html) and [Tools](tools.html) sections.
+In particular, check out the 
+link:examples.html[Examples] section and refer to it as you go.
 
 You can ignore the "advanced" material until you've got a solid grounding with the basics.
 
@@ -135,13 +138,17 @@ Read the material. When examples are presented, try them out in SWI-Prolog. Do t
 When you have questions, try to answer them by trying experiments at the interactor or with a simple
 program. That's how I learned this material, largely.
 
-[Clone the repo](https://github.com/Anniepoo/swiplchrtut) for this tutorial. Some of the examples are available in the **examples** directory.
+link:https://github.com/Anniepoo/swiplchrtut[Clone the repo]
+ for this tutorial. Some of the examples are available in the **examples** directory.
 
-Seek out other tutorials. [Tom Schrijvers Slide set from his ICLP presentation](https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf) is particularly useful.
+Seek out other tutorials. 
+link:https://dtai.cs.kuleuven.be/CHR/files/tutorial_iclp2008.pdf[Tom Schrijvers Slide set from his ICLP presentation] is particularly useful.
 
 As you start to see what you can do with CHR, develop a goal. Learning is more fun when it's for a specific purpose.
 
-Once you have a basic grasp, the [debugger](https://www.swi-prolog.org/pldoc/man?section=debugging) can be useful. Placing writelns in bodies can also be useful. CHR prints out it's residual constraints, I suggest printing somethign along with your debug writelns to distinguish yours from CHR's.
+Once you have a basic grasp, the 
+link:https://www.swi-prolog.org/pldoc/man?section=debugging[debugger] 
+can be useful. Placing writelns in bodies can also be useful. CHR prints out it's residual constraints, I suggest printing somethign along with your debug writelns to distinguish yours from CHR's.
 
 Develop a **cheat sheet** for yourself. When learning, I found it useful to paste this comment, which gives the basic CHR syntax and what is kept and discarded, into my code:
 
@@ -155,7 +162,9 @@ Develop a **cheat sheet** for yourself. When learning, I found it useful to past
 */
 ----
 
-At the bottom of the [Advanced](/advanced.html) chapter is a collection of tools. Some may be useful as you learn.
+At the bottom of the 
+link:advanced.html[Advanced]
+chapter is a collection of tools. Some may be useful as you learn.
 
 Don't panic if you don't get it at first. The syntax of CHR is fairly simple, but its a new paradigm and there are lots of small gotchas in the actual use.
 

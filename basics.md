@@ -288,6 +288,10 @@ Hint: you want two salts to become one salt.
 
 This **set semantics** is a frequently useful pattern.
 
+
+Matching
+^^^^^^^^
+
 So what does it mean to match?
 
 Generally this is straightforward - it unifies like Prolog. 

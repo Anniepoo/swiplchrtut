@@ -60,7 +60,7 @@ This tutorial, like most of my tutorials, came from my own desire to understand 
 So I've been somewhere between a constant questioner and an outright pest to many in the CHR
 community for the past few months.
 
-Thanks to Thom Fr ̈uhwirth for the CHR library and for answering questions on the CHR list and email.
+Thanks to Thom Frühwirth for the CHR library and for answering questions on the CHR list and email.
 
 Alan Baljeu gave much patient coaching on the CHR list, and spent an evening on video call explaining CHR.
 

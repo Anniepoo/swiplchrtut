@@ -563,14 +563,17 @@ Recursion is often a useful pattern.
 =====================================================================
 Let's get lucky. Many Chinese folks think numbers like 8888 are auspicious.
 
-make a constraint `lucky/1`. Only add to the store those that are 'lucky' (a series
+Make a constraint `lucky/1`. Only add to the store those that are 'lucky' (a series
 of 8's).
+
+----
 lucky(888).  % stays in store
 lucky(888888888). % stays in store
 lucky(77). % remove
 lucky(8). % stays in store
+----
 
-hint: you will need **two** constraints, one to stay in the store and one to add
+Hint: you will need **two** constraints, one to stay in the store and one to add
 to the store
 =====================================================================
 

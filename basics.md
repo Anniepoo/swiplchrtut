@@ -392,7 +392,7 @@ Suppose we have a bunch of constraints like `quake(Intensity)`. Our instrument i
 have many small tremors we can discard. Let's discard all quakes less than 3.0 .
 
 ---------------------------------------------
-guard(Intensity) <=> Intensity < 3.0 | true.
+quake(Intensity) <=> Intensity < 3.0 | true.
 
 ---------------------------------------------
 

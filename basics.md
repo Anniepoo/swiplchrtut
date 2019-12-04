@@ -392,7 +392,7 @@ Suppose we have a bunch of constraints like `quake(Intensity)`. Our instrument i
 have many small tremors we can discard. Let's discard all quakes less than 3.0 .
 
 ---------------------------------------------
-guard(Intensity) <=> Intensity < 3.0 | true.   > remove at some point, stupid colorizer
+guard(Intensity) <=> Intensity < 3.0 | true.
 
 ---------------------------------------------
 
@@ -521,11 +521,9 @@ It terminates.
 
 rules **do not re-fire** if both of:
 
-The exact same constraints (not just type) are involved. 
-Thus the salt,salt,water,water example works.
+* The exact same constraints (not just type) are involved. Thus the `salt,salt,water,water` example works.
 And this answers our 'keep going' question.
-
-Prolog in the body didn't leave choice points.
+* Prolog in the body didn't leave choice points.
 
 [Exercise]
 .Exercise - How many solutions do I get?

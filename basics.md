@@ -600,7 +600,7 @@ As we've seen, calling a CHR constraint from Prolog causes it to be added to the
 
 If Prolog in the **body** of any rule fails, all changes to the store since the 'original'
 attempt to add a constraint (by calling it from Prolog) are **rolled back**.
-The Prolog itself then fails t that poing.
+The Prolog itself then fails to that point.
 
 ----
 

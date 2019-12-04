@@ -20,7 +20,7 @@ link:final.html[Final]
 This chapter covers some advanced CHR topics.
 
 Much of the material in this chapter is taken from the 
-link:https://dtai.cs.kuleuven.be/CHR/files/CHR_cheatsheet.pdf[CHR Cheatsheet] by Amira Zaki, Thom Fr ̈uhwirth, and Jon Sneyers.
+link:https://dtai.cs.kuleuven.be/CHR/files/CHR_cheatsheet.pdf[CHR Cheatsheet] by Amira Zaki, Thom Frühwirth, and Jon Sneyers.
 
 Because this document covers much of what I want to cover in this chapter better than I could,
 I'll be referring the student to it repeatedly.

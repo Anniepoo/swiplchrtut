@@ -242,7 +242,7 @@ If we leave the salt water for `time`, it will evaporate back to `salt`.
 Add a new CHR constraint `time/0` and when you have `salt_water` and `time`
 return to `salt`. When you have `water` and time, go back to nothing (put true
 on the right).
-======================================================================
+=====================================================================
 
 Basic CHR syntax
 ----------------
@@ -284,7 +284,7 @@ and `water` means any non-zero
 amount of water, and we only get one `salt_water`.
 
 Hint: you want two salts to become one salt.
-======================================================================
+=====================================================================
 
 This **set semantics** is a frequently useful pattern.
 

@@ -586,7 +586,7 @@ image:house.png[childs drawing of house]
 We define a house as a triangle atop a box. Well, if we find the 'triangle' part first,
 and turn it into a triangle, we're left with
 
-image:housebody.png[3 lines, 2 vertical and one at bottom]
+image:housebody.png["3 lines, 2 vertical and one at bottom"]
 
 Which isn't a 'box' any more. In this case it's probably better to leave 'lines' in the store.
 

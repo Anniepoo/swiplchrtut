@@ -54,7 +54,7 @@ This tutorial is divided into 5 chapters.
 Who Should Do This Tutorial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This tutorial is for reasonably experienced SWI-Prolog programmers who want to use Tom Freuwerth's _Constraint_Handling_Rules_ system with **SWI-Prolog**. 
+This tutorial is for reasonably experienced SWI-Prolog programmers who want to use Thom Frühwirth's _Constraint_Handling_Rules_ system with **SWI-Prolog**.
 
 Some parts of the material, notably the chapter on constraint systems, depend on a knowledge of constraint
 programming. 

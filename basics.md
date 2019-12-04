@@ -242,7 +242,7 @@ If we leave the salt water for `time`, it will evaporate back to `salt`.
 Add a new CHR constraint `time/0` and when you have `salt_water` and `time`
 return to `salt`. When you have `water` and time, go back to nothing (put true
 on the right).
-======================================================================
+=====================================================================
 
 Basic CHR syntax
 ----------------
@@ -284,7 +284,7 @@ and `water` means any non-zero
 amount of water, and we only get one `salt_water`.
 
 Hint: you want two salts to become one salt.
-======================================================================
+=====================================================================
 
 This **set semantics** is a frequently useful pattern.
 
@@ -563,14 +563,17 @@ Recursion is often a useful pattern.
 =====================================================================
 Let's get lucky. Many Chinese folks think numbers like 8888 are auspicious.
 
-make a constraint `lucky/1`. Only add to the store those that are 'lucky' (a series
+Make a constraint `lucky/1`. Only add to the store those that are 'lucky' (a series
 of 8's).
+
+----
 lucky(888).  % stays in store
 lucky(888888888). % stays in store
 lucky(77). % remove
 lucky(8). % stays in store
+----
 
-hint: you will need **two** constraints, one to stay in the store and one to add
+Hint: you will need **two** constraints, one to stay in the store and one to add
 to the store
 =====================================================================
 
@@ -583,7 +586,7 @@ image:house.png[childs drawing of house]
 We define a house as a triangle atop a box. Well, if we find the 'triangle' part first,
 and turn it into a triangle, we're left with
 
-image:housebody.png[3 lines, 2 vertical and one at bottom]
+image:housebody.png["3 lines, 2 vertical and one at bottom"]
 
 Which isn't a 'box' any more. In this case it's probably better to leave 'lines' in the store.
 

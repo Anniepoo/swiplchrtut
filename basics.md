@@ -100,16 +100,16 @@ put the salt or water in.
 
 salt(N),water(N) <=> salt_water(N).                  <2>
 
-?- salt, water.                                      <3>
-salt_water.                                          <4>
+?- salt(3), water(3).                                <3>
+salt_water(3).                                       <4>
 
 ?- 
 ----
 
 <1> This time the chr_constraints have a single  argument. salt(3) means there is salt in beaker 3. Like in Prolog, CHR constraints are defined by their **signature**.
-<2> define a CHR rule  - if salt and water are in the store, remove them and put in salt_water.
-<3> query that adds salt and water to the store.
-<4> CHR prints the contents of the store at the top level by default. The store contains salt_water.
+<2> define a CHR rule  - if salt and water are in the same beaker, remove them and put in salt_water.
+<3> query that adds salt and water to beaker 3.
+<4> CHR prints the contents of the store at the top level by default. The store contains salt_water(3).
 
 When we call a CHR constraint from prolog, that argument unifies with the same position in the CHR constraint. However, the matching is not done in Prolog- it's done in CHR. And to CHR `foo(X)`, with X unbound, is a **different constraint** than `foo(2)`.
 

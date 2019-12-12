@@ -39,11 +39,13 @@ There is an important exception to this rule. If the **guard** encounters `groun
 (not the constraints) will **reactivate** when the argument of `ground/1` is **grounded**.
 
 ----
-more_than_3(N) <=>  ground(N), N > 3 | writeln('fired').
+more_than_3(N) <=> ground(N), N > 3 | writeln('more').
+more_than_3(N) <=> ground(N) | writeln('not more'), fail.
 
-?-more_than_3(X),writeln('middle'),X = 2.
+?- more_than_3(X), writeln('middle'), X = 2.
 middle
-fired.
+not more
+false.
 ----
 
 `nonvar/1` works the same way.

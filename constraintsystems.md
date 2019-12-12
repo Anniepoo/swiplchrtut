@@ -19,7 +19,7 @@ link:final.html[Final]
 
 The material in this chapter depends on understanding constraint systems.
 
-If you want to understand making constraint systems, at least read the intro chapter of my [clp(fd) tutorial](/swipltuts/clpfd/clpfd.html), the Prolog clpfd library notes,
+If you want to understand making constraint systems, at least read the intro chapter of my link:/swipltuts/clpfd/clpfd.html[clp(fd) tutorial], the Prolog clpfd library notes,
 and the entries for attributed variables in the SWI-Prolog manual.
 
 .Review
@@ -39,10 +39,12 @@ There is an important exception to this rule. If the **guard** encounters `groun
 (not the constraints) will **reactivate** when the argument of `ground/1` is **grounded**.
 
 ----
-more_than_3(N) <=>  ground(N), N > 3 | true.
+more_than_3(N) <=> ground(N), N > 3 | writeln('more').
+more_than_3(N) <=> ground(N) | writeln('not more'), fail.
 
-?-more_than_3(X),writeln('middle'),X = 2.
+?- more_than_3(X), writeln('middle'), X = 2.
 middle
+not more
 false.
 ----
 
@@ -57,14 +59,6 @@ If one of the reactivated rules fails, then the **unification fails in the origi
 This allows us to build **constraint systems**.  If you're not familiar with constraint systems, check out 
 link:http://www.pathwayslms.com/swipltuts/clpfd/clpfd.html[my clp(fd) tutorial].
 Note that the above code says 'middle', and only fails when X is bound.
-
-Since we can later change the constraint we can develop very efficient constraint checkers.
-If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard the weaker constraint.
-
-----
-more_than_4(X) \ more_than_3(X) <=> true.
-----
-
 
 Since we can later change the constraint we can develop very efficient constraint checkers.
 If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard the weaker constraint.
@@ -102,7 +96,7 @@ gofail :- cl_list(X),                              <3>
 Now let's add a minimum length constraint.
 
 ----
-:- chr_constraint cl_min_len/1.
+:- chr_constraint cl_min_len/2.
 
 cl_min_len(X, MinLen) <=>           <1>
          nonvar(X),

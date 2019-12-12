@@ -67,14 +67,6 @@ If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard t
 more_than_4(X) \ more_than_3(X) <=> true.
 ----
 
-
-Since we can later change the constraint we can develop very efficient constraint checkers.
-If we apply `more_than_4` to X then we _subsume_ `more_than_3`. We can discard the weaker constraint.
-
-----
-more_than_4(X) \ more_than_3(X) <=> true.
-----
-
 A simple constraint system
 --------------------------
 

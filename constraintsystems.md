@@ -96,7 +96,7 @@ gofail :- cl_list(X),                              <3>
 Now let's add a minimum length constraint.
 
 ----
-:- chr_constraint cl_min_len/1.
+:- chr_constraint cl_min_len/2.
 
 cl_min_len(X, MinLen) <=>           <1>
          nonvar(X),

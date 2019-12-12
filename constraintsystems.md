@@ -19,7 +19,7 @@ link:final.html[Final]
 
 The material in this chapter depends on understanding constraint systems.
 
-If you want to understand making constraint systems, at least read the intro chapter of my [clp(fd) tutorial](/swipltuts/clpfd/clpfd.html), the Prolog clpfd library notes,
+If you want to understand making constraint systems, at least read the intro chapter of my link:/swipltuts/clpfd/clpfd.html[clp(fd) tutorial], the Prolog clpfd library notes,
 and the entries for attributed variables in the SWI-Prolog manual.
 
 .Review

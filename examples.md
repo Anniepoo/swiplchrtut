@@ -182,7 +182,7 @@ init(N), num(M) ==> N > M | succ(M, NewM), num(NewM).
 num(N) \ init(N) <=> true.
 
 % remove the non-primes.
-num(A) \ num(B) <=> B > A, B mod A =:= 0 | true.
+num(A) \ num(B) <=> B > A, A > 1, B mod A =:= 0 | true.
 ----
 
 Actions and State

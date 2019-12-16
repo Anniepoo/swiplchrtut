@@ -458,7 +458,7 @@ init ==> description(bedroom, 'an ordinary bedroom. The bed is not made.'),
          description(living_room, 'Bob\'s living room. The picture matches his sofa. there is a key here.'),
          description(library, 'Bob\'s library. Mostly Harlequin romances and Readers Digest.').
 init \ player(_) <=> player(bedroom).
-iniy \ key <=> true.
+init \ key <=> true.
 
 % moves
 player(bedroom), east <=> player(living_room).

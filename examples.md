@@ -520,13 +520,18 @@ store and prints them out. We'll also lowercase incoming text and discard punctu
 Our example defines a sentence as anything followed by a period.
 
 ----
-:- chr_constraint char/1, word_done/0, letter/1, partial_word/1, partial_sentence/1, sentence/1, sentence_done/0.
+:- chr_constraint sentence_atom/1, char/1, word_done/0, letter/1, partial_word/1, partial_sentence/1, sentence/1, sentence_done/0.
+
+sentence_atom(SentenceAtom) <=>
+    partial_sentence([]),
+    atom_codes(SentenceAtom, Codes),
+    maplist(char, Codes).
 
 % is it a letter?
 char(X) <=> X >= 0'a , X =< 0'z | letter(X).
 char(X) <=> X >= 0'A , X =< 0'Z | letter(X).
-char(0'.) <=> sentence_done.
-char(X) <=> word_done.   % everything else ends words
+char(0'.) <=> word_done, sentence_done.
+char(_) <=> word_done.   % everything else ends words
 
 letter(X), partial_word(List) <=>
             partial_word([X | List]).
@@ -534,7 +539,7 @@ letter(X) <=> partial_word([X]).
 
 word_done, partial_word(List), partial_sentence(Sentence) <=>
     partial_word_word(List, Word),
-    partial_sentence([Word, Sentence]).
+    partial_sentence([Word|Sentence]).
 word_done <=> true.  % eg comma followed by space we just ignore the space
 
 sentence_done, partial_sentence(S) <=>
@@ -547,7 +552,7 @@ partial_word_word(List, Word) :-
 ----
 
 Notice that I get rid of things from the store as soon as they're incorporated in something bigger. 
-Letters are includeded in the current partial word and **then discarded**.
+Letters are included in the current partial word and **then discarded**.
 
 Note also that I uses `partial_word_word/2` to convert the list - there seemed little point in doing
 this in CHR. The Prolog is both more efficient and easier to write.

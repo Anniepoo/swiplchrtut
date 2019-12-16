@@ -452,28 +452,33 @@ Here's a simple game where the player can move among 3 rooms. They must pick up
 a key to get into the library. For simplicity, you can only go east, west, and pick_up (the key).
 
 ----
-:- chr_constraint init/0, description/2, player/1, pick_up/0, key/0, look/0.
+:- chr_constraint init/0, description/2, player/1, pick_up/0, key/0, picked_up_key/0, look/0, east/0, west/0.
 
-init ==> description(bedroom, 'an ordinary bedroom. The bed is not made.'),
-         description(living_room, 'Bob\'s living room. The picture matches his sofa. there is a key here.'),
-         description(library, 'Bob\'s library. Mostly Harlequin romances and Readers Digest.').
-init \ player(_) <=> player(bedroom).
+% clear any previous state then initialize game state
 init \ key <=> true.
+init \ player(_) <=> true.
+init \ description(_,_) <=> true.
+init <=> description(bedroom, 'An ordinary bedroom. The bed is not made.'),
+         description(living_room, 'Bob\'s living room. The picture matches his sofa. There is a key here.'),
+         description(library, 'Bob\'s library. Mostly Harlequin romances and Readers Digest.'),
+         player(bedroom).
 
 % moves
 player(bedroom), east <=> player(living_room).
 player(living_room), east, key <=> player(library).
 player(library), west <=> player(living_room).
 player(living_room), west <=> player(bedroom).
-player(living_room) \ pick_up <=> key.
-east <=> writeln('you can\'t go east here').
-west <=> writeln('you can\'t go west here').
-pick_up <=> writeln('nothing to pick up here').
+player(living_room), key \ pick_up <=> writeln('You already have the key.').
+player(living_room) \ pick_up <=> key, picked_up_key.
+east <=> writeln('You can\'t go east here.').
+west <=> writeln('You can\'t go west here.').
+pick_up <=> writeln('Nothing to pick up here.').
 
 % printing
 
 % make the living_room description change when the key's picked up
-key \ description(living_room, _) <=> description(living_room, 'Bob\'s living room. The picture matches his sofa.').
+% picked_up_key prevents an infinite loop
+key \ picked_up_key, description(living_room, _) <=> description(living_room, 'Bob\'s living room. The picture matches his sofa.').
 
 % print the player's location
 player(Loc), description(Loc, Desc) ==> writeln(Desc).
@@ -481,7 +486,7 @@ player(Loc), description(Loc, Desc) ==> writeln(Desc).
 % handle look command
 
 look, player(Loc), description(Loc, Desc) ==> writeln(Desc).
-look, key ==> writeln('you are carrying a key').
+look, key ==> writeln('You are carrying a key.').
 look <=> true.
 ----
 

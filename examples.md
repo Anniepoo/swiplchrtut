@@ -346,6 +346,7 @@ must_be_int(X) <=> ground(X) | integer(X).
 alternatively
 
 ----
+must_be_int(X, _) <=> ground(X), integer(X) | true.
 must_be_int(X, Context) <=> ground(X) | throw(error(type_error(integer, X), Context)).
 ----
 

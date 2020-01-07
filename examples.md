@@ -401,6 +401,7 @@ ship(S) \ health(S, H), hit(S, Damage) <=>
                 H - Damage =< 0 | 
                 dead(S).
 ship(S), dead(S) \ appearance(S, _) <=>
+                A \= dead |
                 appearance(S, dead).
 ----
 

@@ -680,7 +680,6 @@ find_placement :-
 place(sofa, n) ==> fail.  % door to kitchen doesn't leave enough space for sofa
 place(sofa, s) ==> fail.  % outside door and puja niche don't leave enough space for sofa
 place(sofa, X), place(tv, Y) ==> opposite(X,Y).  % demand sofa and tv are on opposite walls
-place(sofa, X), place(tv, Y) ==> fail.
 place(desk, n) <=> fail.  % don't place the desk on the north wall, no room.
 
 opposite(n, s).

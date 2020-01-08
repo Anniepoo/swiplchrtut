@@ -672,7 +672,7 @@ find_placement :-
     member(Sofa, [n, s, e, w]),
     place(sofa, Sofa),
     member(TV, [n, s, e, w]),
-    place(tv, TV),sof
+    place(tv, TV),
     member(Desk, [n, s, e, w]),
     place(desk, Desk),
     format('place sofa on ~w, tv on ~w, desk on ~w~n', [Sofa, TV, Desk]).

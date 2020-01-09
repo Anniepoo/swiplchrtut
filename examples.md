@@ -577,9 +577,9 @@ A web application where POST requests modify the store, subject to complex const
 
 Of course a web application is a bit complex for a tutorial. I'll refer you to an example.
 
-link:http://swi-prolog.org[SWi-Prolog]
+link:http://swi-prolog.org[SWI-Prolog]
 occasionally organizes teams to participate in 
-link:ldjam.com[Ludum Dare]
+link:http://ldjam.com[Ludum Dare]
 ,a large international game jam competition.
 
 In summer 2019 the team built a fun little game where you draw childs drawing 'houses' to save a little pig

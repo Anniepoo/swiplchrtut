@@ -754,7 +754,7 @@ wire-wrap board. We can check a constraint like this
 design_check, wire(T, _) ==> pin_not_checked(T).
 design_check, pin_not_checked(T) \ pin_not_checked(T) <=> true. % get rid of duplicates
 design_check, wire(T, A), wire(T, B) \ pin_not_checked(T) <=> A \= B | true.
-design_check, pin_not_checked(t) <=> fail. % or do whatever's appropriate when the design fails
+design_check, pin_not_checked(T) <=> fail. % or do whatever's appropriate when the design fails
 ----
 
 we need `design_check` because the design won't be valid until we've added all the wires.

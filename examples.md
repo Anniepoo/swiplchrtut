@@ -757,7 +757,7 @@ design_check, wire(T, A), wire(T, B) \ pin_not_checked(T) <=> A \= B | true.
 design_check, pin_not_checked(T) <=> fail. % or do whatever's appropriate when the design fails
 ----
 
-we need `design_check` because the design won't be valid until we've added all the wires.
+We need `design_check` because the design won't be valid until we've added all the wires.
 
 Implication
 ~~~~~~~~~~~

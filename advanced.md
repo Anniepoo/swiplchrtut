@@ -36,7 +36,7 @@ Advanced CHR
 CHR Options
 -----------
 
-You can set CHR options with the directive `chr_options/2`. Options are
+You can set CHR options with the directive `chr_option/2`. Options are
 
 * `check_guard_bindings` (on/off) - make guards that bind variables error the CHR compiler (otherwise their behavior is undefined).
 * `optimize` (full/off) - do optimization during compilation (which disables debugging)

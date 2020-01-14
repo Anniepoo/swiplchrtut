@@ -122,7 +122,7 @@ Performance
 By now you will have accumulated a number of CHR programs as exercises.
 
 Choose some that can operate on an arbitrary amount of data and greatly
-increase that amount. Try running them inside `timer/1`. Also try running
+increase that amount. Try running them inside `time/1`. Also try running
 the profiler.
 =====================================================================
 

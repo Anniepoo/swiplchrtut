@@ -86,6 +86,7 @@ The usual module/use_module/export pattern works:
 in `modulea.pl`
 ----
 :- use_module(moduleb).
+:- use_module(library(chr)).
 
 :- chr_constraint in_a/0.
 

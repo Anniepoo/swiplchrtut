@@ -36,7 +36,7 @@ Advanced CHR
 CHR Options
 -----------
 
-You can set CHR options with the directive `chr_options/2`. Options are
+You can set CHR options with the directive `chr_option/2`. Options are
 
 * `check_guard_bindings` (on/off) - make guards that bind variables error the CHR compiler (otherwise their behavior is undefined).
 * `optimize` (full/off) - do optimization during compilation (which disables debugging)
@@ -86,6 +86,7 @@ The usual module/use_module/export pattern works:
 in `modulea.pl`
 ----
 :- use_module(moduleb).
+:- use_module(library(chr)).
 
 :- chr_constraint in_a/0.
 
@@ -121,7 +122,7 @@ Performance
 By now you will have accumulated a number of CHR programs as exercises.
 
 Choose some that can operate on an arbitrary amount of data and greatly
-increase that amount. Try running them inside `timer/1`. Also try running
+increase that amount. Try running them inside `time/1`. Also try running
 the profiler.
 =====================================================================
 
@@ -271,7 +272,7 @@ This handy pattern prints out the execution of CHR without stopping.
 
 ----
 % print out execution without pausing
-?- chr_leash(-all).  chr_trace.  query(2,3,N).
+?- chr_leash(none), chr_trace, query(2,3,N).
 ----
 
 Simple Tools

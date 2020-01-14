@@ -2,7 +2,7 @@
 
 This is part of the tutorials served at [Pathways tutorials](http://www.pathwayslms.com/swipltuts/).
 
-This is a tutorial that teaches Thom Freuwirth's CHR system that comes as part of the standard **SWI-Prolog
+This is a tutorial that teaches Thom Frühwirth's CHR system that comes as part of the standard **SWI-Prolog
 distribution.
 
 ## Install

@@ -272,7 +272,7 @@ This handy pattern prints out the execution of CHR without stopping.
 
 ----
 % print out execution without pausing
-?- chr_leash(-all).  chr_trace.  query(2,3,N).
+?- chr_leash(none), chr_trace, query(2,3,N).
 ----
 
 Simple Tools

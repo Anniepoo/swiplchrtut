@@ -182,7 +182,7 @@ init(N), num(M) ==> N > M | succ(M, NewM), num(NewM).
 num(N) \ init(N) <=> true.
 
 % remove the non-primes.
-num(A) \ num(B) <=> B > A, B mod A =:= 0 | true.
+num(A) \ num(B) <=> B > A, A > 1, B mod A =:= 0 | true.
 ----
 
 Actions and State
@@ -310,10 +310,16 @@ This assumes the student knows a little about electronic circuitry.
 ----
 :- chr_constraint   at_voltage/2, short/1, wire/2.
 
+% remove duplicates
+short(T) \ short(T) <=> true.
+% prevent an infinite loop
+at_voltage(V, T) \ at_voltage(V, T) <=> true.
 % if we are holding a pin at two different voltages there's a short
 at_voltage(V1, T), at_voltage(V2, T) ==> V1 \= V2 | short(T).
 % connections to a pin from a voltage source hold that pin at the source
 % vcc is the power supply voltage, gnd is ground
+wire(Term, vcc) ==> at_voltage(vcc, Term).
+wire(Term, gnd) ==> at_voltage(gnd, Term).
 wire(vcc, Term) ==> at_voltage(vcc, Term).
 wire(gnd, Term) ==> at_voltage(gnd, Term).
 % if T1 and T2 have a wire between them and one end is held at a voltage,
@@ -340,6 +346,7 @@ must_be_int(X) <=> ground(X) | integer(X).
 alternatively
 
 ----
+must_be_int(X, _) <=> ground(X), integer(X) | true.
 must_be_int(X, Context) <=> ground(X) | throw(error(type_error(integer, X), Context)).
 ----
 
@@ -394,6 +401,7 @@ ship(S) \ health(S, H), hit(S, Damage) <=>
                 H - Damage =< 0 | 
                 dead(S).
 ship(S), dead(S) \ appearance(S, _) <=>
+                A \= dead |
                 appearance(S, dead).
 ----
 
@@ -422,17 +430,18 @@ ship(S) ==> health_state(S, ok), health(S, 20).
 ship(S), health_state(S, dead) \ hit(S, _) <=> true.
 
 % take damage
-ship(S) \ health(S, H), hit(S, Damage) <=> 
-                NH is H - Damage, 
+ship(S) \ health(S, H), hit(S, Damage) <=>
+                NH is H - Damage,
                 health(S, NH).
 
 % die if ship falls below 0 health
-ship(S), health(S, H) <=>
-         H =< 0 | 
+ship(S), health(S, H) \ health_state(S, State) <=>
+         H =< 0, State \= dead |
          health_state(S, dead).
 
 % for now appearance is just state
 ship(S), health_state(S, State) ==> appearance(S, State).
+appearance(S, dead) \ appearance(S, _) <=> true.
 
 ----
 
@@ -452,28 +461,33 @@ Here's a simple game where the player can move among 3 rooms. They must pick up
 a key to get into the library. For simplicity, you can only go east, west, and pick_up (the key).
 
 ----
-:- chr_constraint init/0, description/2, player/1, pick_up/0, key/0, look/0.
+:- chr_constraint init/0, description/2, player/1, pick_up/0, key/0, picked_up_key/0, look/0, east/0, west/0.
 
-init ==> description(bedroom, 'an ordinary bedroom. The bed is not made.'),
-         description(living_room, 'Bob\'s living room. The picture matches his sofa. there is a key here.'),
-         description(library, 'Bob\'s library. Mostly Harlequin romances and Readers Digest.').
-init \ player(_) <=> player(bedroom).
-iniy \ key <=> true.
+% clear any previous state then initialize game state
+init \ key <=> true.
+init \ player(_) <=> true.
+init \ description(_,_) <=> true.
+init <=> description(bedroom, 'An ordinary bedroom. The bed is not made.'),
+         description(living_room, 'Bob\'s living room. The picture matches his sofa. There is a key here.'),
+         description(library, 'Bob\'s library. Mostly Harlequin romances and Readers Digest.'),
+         player(bedroom).
 
 % moves
 player(bedroom), east <=> player(living_room).
 player(living_room), east, key <=> player(library).
 player(library), west <=> player(living_room).
 player(living_room), west <=> player(bedroom).
-player(living_room) \ pick_up <=> key.
-east <=> writeln('you can\'t go east here').
-west <=> writeln('you can\'t go west here').
-pick_up <=> writeln('nothing to pick up here').
+player(living_room), key \ pick_up <=> writeln('You already have the key.').
+player(living_room) \ pick_up <=> key, picked_up_key.
+east <=> writeln('You can\'t go east here.').
+west <=> writeln('You can\'t go west here.').
+pick_up <=> writeln('Nothing to pick up here.').
 
 % printing
 
 % make the living_room description change when the key's picked up
-key \ description(living_room, _) <=> description(living_room, 'Bob\'s living room. The picture matches his sofa.').
+% picked_up_key prevents an infinite loop
+key \ picked_up_key, description(living_room, _) <=> description(living_room, 'Bob\'s living room. The picture matches his sofa.').
 
 % print the player's location
 player(Loc), description(Loc, Desc) ==> writeln(Desc).
@@ -481,7 +495,7 @@ player(Loc), description(Loc, Desc) ==> writeln(Desc).
 % handle look command
 
 look, player(Loc), description(Loc, Desc) ==> writeln(Desc).
-look, key ==> writeln('you are carrying a key').
+look, key ==> writeln('You are carrying a key.').
 look <=> true.
 ----
 
@@ -520,13 +534,18 @@ store and prints them out. We'll also lowercase incoming text and discard punctu
 Our example defines a sentence as anything followed by a period.
 
 ----
-:- chr_constraint char/1, word_done/0, letter/1, partial_word/1, partial_sentence/1, sentence/1, sentence_done/0.
+:- chr_constraint sentence_atom/1, char/1, word_done/0, letter/1, partial_word/1, partial_sentence/1, sentence/1, sentence_done/0.
+
+sentence_atom(SentenceAtom) <=>
+    partial_sentence([]),
+    atom_codes(SentenceAtom, Codes),
+    maplist(char, Codes).
 
 % is it a letter?
 char(X) <=> X >= 0'a , X =< 0'z | letter(X).
 char(X) <=> X >= 0'A , X =< 0'Z | letter(X).
-char(0'.) <=> sentence_done.
-char(X) <=> word_done.   % everything else ends words
+char(0'.) <=> word_done, sentence_done.
+char(_) <=> word_done.   % everything else ends words
 
 letter(X), partial_word(List) <=>
             partial_word([X | List]).
@@ -534,7 +553,7 @@ letter(X) <=> partial_word([X]).
 
 word_done, partial_word(List), partial_sentence(Sentence) <=>
     partial_word_word(List, Word),
-    partial_sentence([Word, Sentence]).
+    partial_sentence([Word|Sentence]).
 word_done <=> true.  % eg comma followed by space we just ignore the space
 
 sentence_done, partial_sentence(S) <=>
@@ -547,7 +566,7 @@ partial_word_word(List, Word) :-
 ----
 
 Notice that I get rid of things from the store as soon as they're incorporated in something bigger. 
-Letters are includeded in the current partial word and **then discarded**.
+Letters are included in the current partial word and **then discarded**.
 
 Note also that I uses `partial_word_word/2` to convert the list - there seemed little point in doing
 this in CHR. The Prolog is both more efficient and easier to write.
@@ -558,9 +577,9 @@ A web application where POST requests modify the store, subject to complex const
 
 Of course a web application is a bit complex for a tutorial. I'll refer you to an example.
 
-link:http://swi-prolog.org[SWi-Prolog]
+link:http://swi-prolog.org[SWI-Prolog]
 occasionally organizes teams to participate in 
-link:ldjam.com[Ludum Dare]
+link:http://ldjam.com[Ludum Dare]
 ,a large international game jam competition.
 
 In summer 2019 the team built a fun little game where you draw childs drawing 'houses' to save a little pig
@@ -653,7 +672,7 @@ find_placement :-
     member(Sofa, [n, s, e, w]),
     place(sofa, Sofa),
     member(TV, [n, s, e, w]),
-    place(tv, TV),sof
+    place(tv, TV),
     member(Desk, [n, s, e, w]),
     place(desk, Desk),
     format('place sofa on ~w, tv on ~w, desk on ~w~n', [Sofa, TV, Desk]).
@@ -661,7 +680,6 @@ find_placement :-
 place(sofa, n) ==> fail.  % door to kitchen doesn't leave enough space for sofa
 place(sofa, s) ==> fail.  % outside door and puja niche don't leave enough space for sofa
 place(sofa, X), place(tv, Y) ==> opposite(X,Y).  % demand sofa and tv are on opposite walls
-place(sofa, X), place(tv, Y) ==> fail.
 place(desk, n) <=> fail.  % don't place the desk on the north wall, no room.
 
 opposite(n, s).
@@ -736,10 +754,10 @@ wire-wrap board. We can check a constraint like this
 design_check, wire(T, _) ==> pin_not_checked(T).
 design_check, pin_not_checked(T) \ pin_not_checked(T) <=> true. % get rid of duplicates
 design_check, wire(T, A), wire(T, B) \ pin_not_checked(T) <=> A \= B | true.
-design_check, pin_not_checked(t) <=> fail. % or do whatever's appropriate when the design fails
+design_check, pin_not_checked(T) <=> fail. % or do whatever's appropriate when the design fails
 ----
 
-we need `design_check` because the design won't be valid until we've added all the wires.
+We need `design_check` because the design won't be valid until we've added all the wires.
 
 Implication
 ~~~~~~~~~~~

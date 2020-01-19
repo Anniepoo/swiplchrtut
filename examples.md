@@ -553,7 +553,7 @@ letter(X) <=> partial_word([X]).
 
 word_done, partial_word(List), partial_sentence(Sentence) <=>
     partial_word_word(List, Word),
-    partial_sentence([Word|Sentence]).
+    partial_sentence([Word | Sentence]).
 word_done <=> true.  % eg comma followed by space we just ignore the space
 
 sentence_done, partial_sentence(S) <=>

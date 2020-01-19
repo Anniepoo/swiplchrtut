@@ -3,5 +3,7 @@ asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ b
 asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ constraintsystems.md >constraintsystems.html
 asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ advanced.md >advanced.html
 asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ final.md >final.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ examples.md >examples.html
+
 
 

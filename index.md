@@ -180,8 +180,7 @@ Intro
 
 CHR is an embedded language within Prolog. library(chr) is a library included in the standard SWI-Prolog distribution.
 
-CHR focuses on maintaining a set of _constraints_ in a _constraint store_.
-You can set up _rules_ so that when a constraint is added to the store, other constraints can appear or disappear from the store and prolog goals can be queried. 
+CHR focuses on maintaining a set of _constraints_ in a _constraint store_. You can imagine a container like a box, and blocks with different colors and labels, the 'constraints'. Putting constraints in the store fires off _rules_ that make other constraints appear or disappear from the store and query prolog goals. 
 
 So, in a chemistry simulator, you could add _salt_ and have _salt_ in the store. Then add _tap_water_, and a rule might fire to remove the salt and the water and make _salt_water_.
 

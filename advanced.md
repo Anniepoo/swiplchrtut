@@ -79,6 +79,13 @@ Modules
 
 So far we've not discussed modules.
 
+There is one store per thread, shared by all modules.
+
+Each **module** is treated independently as far as the **rules** it sees,
+and what is allowed in the **head** of the rules.
+
+However, you can add CHR constraints from other modules, calling them in Prolog or CHR bodies.
+
 When a CHR constraint is defined in a module, it is module qualified.
 
 The usual module/use_module/export pattern works:

@@ -254,9 +254,9 @@ of syntax which will be omitted here and covered later.
 We have seen one operator, `<=>`, informally.  There are actually 3 operators. 
 
 ----
-name @ discarded <=> guard | body.              <1> Simplification
+name @ discarded <=> guard | body.               <1> Simplification
 name @ retained \ discarded <=> guard | body.    <2> Simpagation
-name @ retained ==> guard | body.           <3> Propagation
+name @ retained ==> guard | body.                <3> Propagation
 ----
 
 All rules have the same structure regardless of their operator.
@@ -345,10 +345,10 @@ There are 3 operators in CHR.
 We have seen the first type of rule, **Simplification**, denoted by the operator `<=>`. 
 What is on the left hand side is **discarded** from the store, and then the right hand side(RHS) is done.
 
-Our 'single stir' example has a defect.  It removes the stir from the store, and then re-adds it. This is inefficient and cumbersome. Not only does it mean there are more database operations, but every time a constraint is added to the store, possibly more rules fire. If we have a rule that stirring makes `noise`, we get a new `noise` each time the stir constraint is added (back) into the store.
+So far rules have always removed their head constraints. If we don't want this, we have to use a workaround, re-adding the constraint.
 
 The **Simpagation** rule type eliminates the remove/re-add workaround. It uses the same operator `<=>` as the **Simplification** operator, but has a
-`\` backslash in the head. The constraints to the left of the `\` are left in the store, and those to the right removed.
+`\` backslash in the head. The constraints to the left of the `\` are retained in the store, and those to the right removed.
 
 Let's improve our single stir version.
 
@@ -369,6 +369,28 @@ salt_water.
 
 The third rule type, **Propagation**, retains *all* of the constraints in the head.
 
+Why not just have one rule type, and re-add the ones you want to retain in the body? What's wrong with
+the workaround?
+
+Because when you remove and re-add the constraint, it **isn't the same constraint**. So
+rules _activate_ again.
+
+Sally works in a garage. She's been instructed to fill out a new work form every time she works on a car.
+Bob has brought his car into the garage to have the oil changed. Sally follows the rule, and fills in
+a work form for Bob's car.
+
+Here's a snippet of CHR that implements the work form rule. If we remove and re-add the car, it keeps firing
+
+----
+% DOESN'T WORK - infinite loop
+car(Owner, Work) <=> car(Owner, Work), work_form(Owner, Work).
+
+% WORKS
+car(Owner, Work) ==> work_form(Owner, Work).
+----
+
+
+
 [NOTE]
 .Exercise - Propagation rule
 =====================================================================
@@ -377,6 +399,41 @@ for every stir added from outside.
 
 Test your work - does it work even if you don't make salt water?
 Do you make many noises if there's lots of salt water being made?
+=====================================================================
+
+[NOTE]
+.Exercise - Garage
+=====================================================================
+When the garage finishes the work, Prolog adds a constraint `work_done(Owner)`.
+
+Then the owner comes, pays the bill, and takes the car. Prolog adds `pays(Owner)`,
+then `pickup(Owner)`. 
+
+Implement rules to model this process. Don't let the customer take the
+car without paying the bill. 
+(looking ahead, you can make `pickup(Owner)` fail in Prolog by failing the body).
+
+Hint: Which controls the process? The **car**, or the **paperwork**?
+
+Hint: car/2 means something like 'There is a car at the shop. It is owned by `Owner` and
+was brought in to have `Work` done.
+
+=====================================================================
+
+[NOTE]
+.Exercise - Garage Additional Work
+=====================================================================
+Extra credit- harder
+
+Often when a customer takes their car to the garage, the garage
+finds it needs to change what work is done.
+
+Add rules to deal with this. Beyond that, use this exercise to build your skills,
+dealing with things like cars we don't end up working on ("Sorry Ms. Smith,
+your car needs a new engine, and it would cost more than the car is worth.").
+
+Hint: The car needing more work is a change to the **paperwork**, not the car.
+
 =====================================================================
 
 Guard
@@ -460,7 +517,7 @@ and whose right argument is the upper end.
 Define rules to simplify the constraint store.
 
 For example, interval(1, 5) and interval(4, 9) can become interval(1, 9).
-Don't forget interval(1, 5), interval(2,3).
+Don't forget nesting, like interval(1, 5), interval(2,3).
 
 Stretch goal: don't force the user to enter the intervals (low,high).
 If they come in (high, low), swap them around.

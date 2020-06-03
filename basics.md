@@ -335,7 +335,7 @@ This still doesn't work because CHR does:
 . CHR looks for a rule to fire. It finds `foo(3)` in the store and grounds A to 3.
 . CHR then looks for `get_foo(3)` (since we've bound the variable), and, while there's a `get_foo` with an **unbound variable**, there isn't one with a 3. Oops.
 
-Getting information back from the store to Prolog is covered in [Getting](http://#Getting).
+Getting information back from the store to Prolog is covered in <<Getting, Getting>>.
 
 Operator
 ~~~~~~~~
@@ -697,6 +697,7 @@ is a useful starter for a server that uses CHR for it's logic.
 
 A Pengine will have it's own thread. This can be useful for CHR.
 
+[[Getting]]
 Getting
 -------
 

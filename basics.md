@@ -811,7 +811,7 @@ but I often add this to my CHR programs as a handy debug tool.
 % print out the constraint store
 ps :-
     current_chr_constraint(M:Y),
-    format('constraint store contains ~w:~w~n', [Y]),
+    format('constraint store contains ~w:~w~n', [M,Y]),
     fail.
 ps.
 ----

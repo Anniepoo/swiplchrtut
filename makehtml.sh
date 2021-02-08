@@ -1,9 +1,8 @@
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ index.md >index.html
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ basics.md >basics.html
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ constraintsystems.md >constraintsystems.html
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ advanced.md >advanced.html
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ final.md >final.html
-asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ examples.md >examples.html
-
-
+#!/bin/sh
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ index.adoc >index.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ basics.adoc >basics.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ constraintsystems.adoc >constraintsystems.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ advanced.adoc >advanced.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ final.adoc >final.html
+asciidoc -a stylesheet=themes/pathways/style.css -a stylesdir=themes/pathways/ examples.adoc >examples.html
 
